@@ -1,0 +1,13 @@
+phase,area,mode,status,evidence,notes
+1,backend pytest,local,pass,"12 passed","Datetime deprecation warnings only"
+1,frontend build,local,pass,"npm run build","Vite 8 build succeeded; chunk-size warning remains"
+1,frontend lint,local,pass,"npm run lint","Added ESLint config and fixed unused symbols"
+1,OpenAPI schema,local,pass,"69 paths, 25 schemas","Generated from FastAPI app"
+1,frontend dependency audit,local,pass,"npm audit: 0 vulnerabilities","Upgraded Vite and TypeScript ESLint dev tooling"
+1,Python dependency check,local,fail,"pip check conflicts","Global Python environment has unrelated package conflicts"
+1,secret scan,local,pass_with_notes,"No live key patterns in staged source","Placeholder/example strings still match broad patterns"
+2,frontend route visual,local,blocked,"Browser/Playwright not configured","Only HTTP 200 smoke checks executed"
+4,accessibility,local,blocked,"axe-core not installed","No automated axe run"
+24,Firebase Hosting,staging,pass,"200 for / and /app/insights","SPA fallback works"
+24,Cloud Run backend,staging,blocked,"No exceptionos Cloud Run service","Backend not deployed"
+25,judge demo,staging,blocked,"No live backend/auth/Hindsight canary","Requires dedicated test tenant and live providers"

@@ -1,0 +1,7 @@
+{
+  "status": "blocked",
+  "groq": "not_live_tested",
+  "gemini": "not_live_tested",
+  "openai": "not_live_tested",
+  "reason": "Live provider canaries require configured dedicated QA environment and explicit authorization."
+}

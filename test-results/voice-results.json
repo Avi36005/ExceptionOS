@@ -1,0 +1,5 @@
+{
+  "status": "blocked",
+  "elevenlabs": "not_live_tested",
+  "reason": "Live ElevenLabs canary requires configured QA key and explicit authorization."
+}

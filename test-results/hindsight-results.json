@@ -1,0 +1,7 @@
+{
+  "status": "blocked",
+  "retain": "not_live_tested",
+  "recall": "not_live_tested",
+  "reflect": "not_live_tested",
+  "reason": "No dedicated QA Hindsight bank was configured for this run."
+}

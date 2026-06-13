@@ -1,0 +1,22 @@
+{
+  "openapi_generation": {
+    "status": "pass",
+    "openapi": "3.1.0",
+    "paths": 69,
+    "schemas": 25
+  },
+  "local_tests": {
+    "status": "pass",
+    "pytest": "12 passed"
+  },
+  "deployed_frontend": {
+    "status": "pass",
+    "root": 200,
+    "spa_route": 200,
+    "url": "https://exceptionos-nexus-2026.web.app"
+  },
+  "deployed_backend": {
+    "status": "blocked",
+    "reason": "No exceptionos Cloud Run service exists in asia-south1."
+  }
+}

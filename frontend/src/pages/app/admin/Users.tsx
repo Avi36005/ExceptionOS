@@ -1,4 +1,4 @@
-import { Users as UsersIcon, Plus, Mail } from 'lucide-react'
+import { Users as UsersIcon, Mail } from 'lucide-react'
 import { useState } from 'react'
 
 const users = [

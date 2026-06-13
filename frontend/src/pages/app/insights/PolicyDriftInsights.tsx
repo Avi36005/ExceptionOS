@@ -1,4 +1,4 @@
-import { TrendingUp, AlertTriangle } from 'lucide-react'
+import { TrendingUp } from 'lucide-react'
 
 export default function PolicyDriftInsights() {
   return (

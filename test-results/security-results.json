@@ -1,0 +1,22 @@
+{
+  "secret_scan": {
+    "status": "pass_with_notes",
+    "notes": "No live GitHub/Groq/OpenAI/Google style tokens found in tracked source. Broad scan flags placeholder examples and npm package-lock URLs."
+  },
+  "npm_audit": {
+    "status": "pass",
+    "vulnerabilities": 0
+  },
+  "pip_audit": {
+    "status": "not_run",
+    "reason": "pip-audit is not installed."
+  },
+  "pip_check": {
+    "status": "fail",
+    "reason": "Global Python environment dependency conflicts detected; release should use isolated venv/container."
+  },
+  "rls_isolation": {
+    "status": "blocked",
+    "reason": "Dedicated Supabase QA organizations/users were not configured."
+  }
+}

@@ -1,4 +1,4 @@
-import { Clock, User, FileText, MessageSquare, CheckCircle, Eye, Send } from 'lucide-react'
+import { Clock, FileText, MessageSquare, CheckCircle, Eye, Send } from 'lucide-react'
 
 const auditEvents = [
   { id: 1, type: 'submitted', icon: Send, color: 'text-blue-400', actor: 'Alex Turner', action: 'submitted the exception request', time: 'Dec 18, 2024 9:02 AM', details: 'Initial submission with 4 supporting documents' },

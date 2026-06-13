@@ -1,4 +1,4 @@
-import { Outlet, useNavigate, useParams, useLocation, NavLink } from 'react-router-dom'
+import { Outlet, useNavigate, useParams, NavLink } from 'react-router-dom'
 import { ArrowLeft, FileText, Shield, Search, MessageSquare, Brain, Gavel, BarChart2, ClipboardList, Archive, Clock, CheckCircle, AlertTriangle } from 'lucide-react'
 import StatusBadge from '../../../components/ui/StatusBadge'
 
@@ -30,9 +30,7 @@ const mockException = {
 
 export default function ExceptionDetail() {
   const { caseId } = useParams()
-  const location = useLocation()
   const navigate = useNavigate()
-  const currentTab = location.pathname.split('/').pop() || 'intake'
 
   return (
     <div className="fade-in">

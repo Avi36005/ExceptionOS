@@ -83,6 +83,7 @@ export default function TrainingScenario() {
         </button>
         <div className="flex-1">
           <h1 className="text-lg font-bold text-white">{scenario.title}</h1>
+          <p className="text-xs text-primary font-mono mb-1">{scenarioId || 'training-scenario'}</p>
           <p className="text-sm text-gray-400">Step {step + 1} of {scenario.steps.length}</p>
         </div>
       </div>

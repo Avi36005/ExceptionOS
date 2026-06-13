@@ -1,0 +1,47 @@
+[
+  {
+    "id": "QA-P1-001",
+    "severity": "P1",
+    "area": "release-readiness",
+    "status": "open",
+    "title": "No deployed ExceptionOS backend available for staging/live QA",
+    "evidence": "Read-only gcloud check found no Cloud Run services matching ^exceptionos in asia-south1.",
+    "impact": "API health, live auth, Hindsight, provider fallback, and judge demo flows cannot be certified."
+  },
+  {
+    "id": "QA-P1-002",
+    "severity": "P1",
+    "area": "tenant-isolation",
+    "status": "open",
+    "title": "Supabase RLS and cross-tenant isolation not live-verified",
+    "evidence": "No dedicated QA Supabase tenant/users were configured in this run.",
+    "impact": "Production READY cannot be claimed under the QA plan."
+  },
+  {
+    "id": "QA-P1-003",
+    "severity": "P1",
+    "area": "live-integrations",
+    "status": "open",
+    "title": "Live Hindsight and LLM canary flows not verified",
+    "evidence": "No TEST_LIVE_HINDSIGHT/TEST_LIVE_LLM run was authorized or configured.",
+    "impact": "Retain/Recall/Reflect and provider fallback cannot be certified beyond local code paths."
+  },
+  {
+    "id": "QA-P2-001",
+    "severity": "P2",
+    "area": "python-environment",
+    "status": "open",
+    "title": "Shared Python environment has dependency conflicts",
+    "evidence": "python -m pip check reported httpx, uvicorn, opentelemetry, and protobuf conflicts from globally installed packages.",
+    "impact": "Use an isolated backend virtualenv/container for release validation."
+  },
+  {
+    "id": "QA-P2-002",
+    "severity": "P2",
+    "area": "visual-accessibility",
+    "status": "open",
+    "title": "Full route visual and axe accessibility testing not automated",
+    "evidence": "Playwright/axe are not configured in the repo and in-app browser connector was unavailable earlier.",
+    "impact": "Responsive layout and accessibility cannot be fully certified."
+  }
+]

@@ -1,0 +1,6 @@
+{
+  "status": "blocked",
+  "reason": "axe-core/Playwright accessibility suite is not configured in the repository.",
+  "manual_checks": [],
+  "recommendation": "Add Playwright + axe smoke coverage for all public routes and authenticated shell pages."
+}

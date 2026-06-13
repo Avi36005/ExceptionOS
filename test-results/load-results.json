@@ -1,0 +1,5 @@
+{
+  "status": "not_run",
+  "reason": "No k6/Locust load suite is present. Live paid-provider load was not authorized.",
+  "recommendation": "Add mocked 100-cycle pipeline load test before release."
+}

@@ -1,0 +1,9 @@
+{
+  "status": "partial",
+  "http_smoke": {
+    "root": 200,
+    "spa_route": 200
+  },
+  "viewport_matrix": "not_run",
+  "reason": "Browser automation is not configured; no screenshot/DOM collision sweep was executed."
+}
