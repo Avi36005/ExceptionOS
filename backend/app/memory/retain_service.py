@@ -7,6 +7,7 @@ from uuid import UUID
 import structlog
 
 from app.memory.hindsight_client import HindsightClient
+from app.memory.operation_logger import OperationLogContext
 
 logger = structlog.get_logger(__name__)
 
@@ -24,6 +25,8 @@ class RetainService:
         reasoning: str,
         outcome: str | None = None,
         metadata: dict[str, Any] | None = None,
+        document_id: str | None = None,
+        log_ctx: OperationLogContext | None = None,
     ) -> dict[str, Any]:
         """Retain a case decision memory."""
         content = (
@@ -42,7 +45,7 @@ class RetainService:
         if metadata:
             meta.update(metadata)
 
-        return await self.hindsight.retain(bank_id, content, meta)
+        return await self.hindsight.retain(bank_id, content, meta, document_id=document_id, log_ctx=log_ctx)
 
     async def retain_policy_note(
         self,
@@ -51,6 +54,8 @@ class RetainService:
         policy_name: str,
         note: str,
         metadata: dict[str, Any] | None = None,
+        document_id: str | None = None,
+        log_ctx: OperationLogContext | None = None,
     ) -> dict[str, Any]:
         """Retain a policy interpretation or amendment note."""
         content = f"Policy: {policy_name}\nNote: {note}"
@@ -60,7 +65,7 @@ class RetainService:
         }
         if metadata:
             meta.update(metadata)
-        return await self.hindsight.retain(bank_id, content, meta)
+        return await self.hindsight.retain(bank_id, content, meta, document_id=document_id, log_ctx=log_ctx)
 
     async def retain_outcome(
         self,
@@ -70,6 +75,8 @@ class RetainService:
         actual_outcome: str,
         financial_impact: float | None,
         notes: str | None,
+        document_id: str | None = None,
+        log_ctx: OperationLogContext | None = None,
     ) -> dict[str, Any]:
         """Retain an observed outcome for learning."""
         content = (
@@ -85,13 +92,15 @@ class RetainService:
             "type": "outcome",
             "case_id": str(case_id),
         }
-        return await self.hindsight.retain(bank_id, content, meta)
+        return await self.hindsight.retain(bank_id, content, meta, document_id=document_id, log_ctx=log_ctx)
 
     async def retain_raw(
         self,
         bank_id: str,
         content: str,
         metadata: dict[str, Any] | None = None,
+        document_id: str | None = None,
+        log_ctx: OperationLogContext | None = None,
     ) -> dict[str, Any]:
         """Retain arbitrary content."""
-        return await self.hindsight.retain(bank_id, content, metadata or {})
+        return await self.hindsight.retain(bank_id, content, metadata or {}, document_id=document_id, log_ctx=log_ctx)

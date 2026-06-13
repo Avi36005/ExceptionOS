@@ -1,6 +1,8 @@
 """Main orchestrator agent.
 
-Coordinates the full multi-agent debate pipeline and emits SSE events.
+Coordinates the full multi-agent debate pipeline and emits SSE events,
+including the Hindsight memory-operation taxonomy (RETAIN/RECALL/REFLECT
+started/completed, MEMORY_USED, PROVIDER_FALLBACK, OPERATION_FAILED).
 """
 from __future__ import annotations
 
@@ -25,11 +27,26 @@ from app.agents.consistency_agent import ConsistencyAgent
 from app.agents.critic_agent import CriticAgent
 from app.agents.final_decision_agent import FinalDecisionAgent
 from app.llm.provider_router import ProviderRouter
+from app.memory.document_ids import case_decision_document_id
 from app.memory.hindsight_client import HindsightClient
 from app.memory.bank_manager import BankManager
-from app.usage import AggregatedUsage
+from app.memory.operation_logger import OperationLogContext
+from app.memory.recall_service import RecallService
+from app.memory.retain_service import RetainService
+from app.usage import AggregatedUsage, TokenUsage
 
 logger = structlog.get_logger(__name__)
+
+# ── SSE event taxonomy ─────────────────────────────────────────────────────
+EVT_RETAIN_STARTED = "RETAIN_STARTED"
+EVT_RETAIN_COMPLETED = "RETAIN_COMPLETED"
+EVT_RECALL_STARTED = "RECALL_STARTED"
+EVT_RECALL_COMPLETED = "RECALL_COMPLETED"
+EVT_REFLECT_STARTED = "REFLECT_STARTED"
+EVT_REFLECT_COMPLETED = "REFLECT_COMPLETED"
+EVT_MEMORY_USED = "MEMORY_USED"
+EVT_PROVIDER_FALLBACK = "PROVIDER_FALLBACK"
+EVT_OPERATION_FAILED = "OPERATION_FAILED"
 
 
 def _sse(event: str, data: dict[str, Any]) -> str:
@@ -46,11 +63,13 @@ class Orchestrator:
         self.hindsight = hindsight
         self.supabase = supabase
         self.bank_manager = BankManager(supabase, hindsight)
+        self.recall_service = RecallService(hindsight)
+        self.retain_service = RetainService(hindsight)
 
         # Instantiate agents
         self.intake_agent = IntakeAgent(router)
         self.policy_agent = PolicyAgent(router)
-        self.precedent_agent = PrecedentAgent(router, hindsight)
+        self.precedent_agent = PrecedentAgent(router)
         self.finance_agent = FinanceAgent(router)
         self.customer_agent = CustomerImpactAgent(router)
         self.risk_agent = RiskAgent(router)
@@ -68,14 +87,24 @@ class Orchestrator:
         """Stream SSE events for the debate pipeline."""
         start_time = time.monotonic()
         trace_id = str(uuid4())
+        agent_run_id = uuid4()
         usage = AggregatedUsage()
 
-        yield _sse("start", {"trace_id": trace_id, "case_id": str(case_id)})
+        yield _sse("start", {"trace_id": trace_id, "case_id": str(case_id), "agent_run_id": str(agent_run_id)})
+
+        self._create_agent_run(agent_run_id, case_id, trace_id)
+        log_ctx = OperationLogContext(
+            supabase=self.supabase,
+            organization_id=organization_id,
+            case_id=case_id,
+            agent_run_id=agent_run_id,
+        )
 
         try:
             # ── Load case ──────────────────────────────────────────────────
             case_row = self._get_case(case_id, organization_id)
             if not case_row:
+                self._finalize_agent_run(agent_run_id, "failed", usage, 0, [], error="Case not found")
                 yield _sse("error", {"message": "Case not found"})
                 return
 
@@ -105,10 +134,11 @@ class Orchestrator:
                 additional_context=case_facts,
                 demo_mode=demo_mode,
             )
-            if intake_result.get("usage"):
-                from app.usage import TokenUsage
-                usage.add(TokenUsage(**intake_result["usage"]))
+            self._add_usage(usage, intake_result)
             yield _sse("agent_done", {"agent": "intake_agent", "output": intake_result["output"]})
+            fb = self._fallback_event("intake_agent", intake_result)
+            if fb:
+                yield fb
 
             # ── Stage 2: Policy ────────────────────────────────────────────
             yield _sse("agent_start", {"agent": "policy_agent"})
@@ -120,24 +150,38 @@ class Orchestrator:
                 policy_name=policy_name,
                 demo_mode=demo_mode,
             )
-            if policy_result.get("usage"):
-                from app.usage import TokenUsage
-                usage.add(TokenUsage(**policy_result["usage"]))
+            self._add_usage(usage, policy_result)
             yield _sse("agent_done", {"agent": "policy_agent", "output": policy_result["output"]})
+            fb = self._fallback_event("policy_agent", policy_result)
+            if fb:
+                yield fb
 
-            # ── Stage 3: Precedents ────────────────────────────────────────
+            # ── Stage 3: Memory recall + Precedents ────────────────────────
+            case_description = f"{case_facts['title']} {case_facts.get('description', '')}"
+
+            recall_events, recall_buckets = await self._recall_with_events(
+                bank_id=bank_id,
+                case_description=case_description,
+                entity_name=case_facts.get("entity_name"),
+                policy_name=policy_name,
+                top_k=10,
+                log_ctx=log_ctx,
+            )
+            for evt in recall_events:
+                yield evt
+
             yield _sse("agent_start", {"agent": "precedent_agent"})
             precedent_result = await self.precedent_agent.run(
                 case_id=case_id,
-                bank_id=bank_id,
                 case_facts=case_facts,
-                case_description=f"{case_facts['title']} {case_facts.get('description', '')}",
+                memories=recall_buckets.get("merged", []),
                 demo_mode=demo_mode,
             )
-            if precedent_result.get("usage"):
-                from app.usage import TokenUsage
-                usage.add(TokenUsage(**precedent_result["usage"]))
+            self._add_usage(usage, precedent_result)
             yield _sse("agent_done", {"agent": "precedent_agent", "output": precedent_result["output"]})
+            fb = self._fallback_event("precedent_agent", precedent_result)
+            if fb:
+                yield fb
 
             # ── Stage 4: Parallel debate agents ───────────────────────────
             yield _sse("debate_start", {"agents": ["finance", "customer_impact", "risk", "counter_precedent"]})
@@ -180,10 +224,11 @@ class Orchestrator:
                     logger.error(f"{name}_failed", error=str(r))
                     yield _sse("agent_error", {"agent": name, "error": str(r)})
                 else:
-                    if r.get("usage"):
-                        from app.usage import TokenUsage
-                        usage.add(TokenUsage(**r["usage"]))
+                    self._add_usage(usage, r)
                     yield _sse("agent_done", {"agent": name, "output": r.get("output", {})})
+                    fb = self._fallback_event(name, r)
+                    if fb:
+                        yield fb
 
             # Safe dereference
             finance_out = finance_r.get("output", {}) if not isinstance(finance_r, Exception) else {}
@@ -201,10 +246,11 @@ class Orchestrator:
                 current_direction=preliminary_dir,
                 demo_mode=demo_mode,
             )
-            if consistency_r.get("usage"):
-                from app.usage import TokenUsage
-                usage.add(TokenUsage(**consistency_r["usage"]))
+            self._add_usage(usage, consistency_r)
             yield _sse("agent_done", {"agent": "consistency_agent", "output": consistency_r["output"]})
+            fb = self._fallback_event("consistency_agent", consistency_r)
+            if fb:
+                yield fb
 
             # ── Stage 6: Critic ────────────────────────────────────────────
             yield _sse("agent_start", {"agent": "critic_agent"})
@@ -225,10 +271,11 @@ class Orchestrator:
                 preliminary_recommendation=preliminary_dir,
                 demo_mode=demo_mode,
             )
-            if critic_r.get("usage"):
-                from app.usage import TokenUsage
-                usage.add(TokenUsage(**critic_r["usage"]))
+            self._add_usage(usage, critic_r)
             yield _sse("agent_done", {"agent": "critic_agent", "output": critic_r["output"]})
+            fb = self._fallback_event("critic_agent", critic_r)
+            if fb:
+                yield fb
 
             # ── Stage 7: Final decision ────────────────────────────────────
             yield _sse("agent_start", {"agent": "final_decision_agent"})
@@ -239,25 +286,39 @@ class Orchestrator:
                 critic_output=critic_r["output"],
                 demo_mode=demo_mode,
             )
-            if final_r.get("usage"):
-                from app.usage import TokenUsage
-                usage.add(TokenUsage(**final_r["usage"]))
+            self._add_usage(usage, final_r)
             final_out = final_r["output"]
             yield _sse("agent_done", {"agent": "final_decision_agent", "output": final_out})
+            fb = self._fallback_event("final_decision_agent", final_r)
+            if fb:
+                yield fb
 
             # ── Stage 8: Persist recommendation ───────────────────────────
-            rec_id = self._save_recommendation(case_id, final_out, precedent_result)
+            rec_id = self._save_recommendation(case_id, final_out, recall_buckets.get("merged", []))
             self._update_case_status(case_id, "pending_decision", rec_id)
 
-            # ── Stage 9: Save agent run ────────────────────────────────────
-            latency_ms = int((time.monotonic() - start_time) * 1000)
-            self._save_agent_run(
+            # ── Stage 9: Retain the decision to Hindsight ───────────────────
+            retain_events = await self._retain_decision_with_events(
+                bank_id=bank_id,
+                organization_id=organization_id,
                 case_id=case_id,
-                trace_id=trace_id,
-                final_provider=final_r.get("provider", ""),
-                fallback_path=final_r.get("fallback_path", []),
+                rec_id=rec_id,
+                case_facts=case_facts,
+                final_out=final_out,
+                log_ctx=log_ctx,
+            )
+            for evt in retain_events:
+                yield evt
+
+            # ── Stage 10: Finalize agent run ────────────────────────────────
+            latency_ms = int((time.monotonic() - start_time) * 1000)
+            self._finalize_agent_run(
+                agent_run_id=agent_run_id,
+                status="completed",
+                usage=usage,
                 latency_ms=latency_ms,
-                token_usage=usage.to_dict(),
+                fallback_path=final_r.get("fallback_path", []),
+                final_provider=final_r.get("provider", ""),
             )
 
             yield _sse("complete", {
@@ -270,8 +331,133 @@ class Orchestrator:
 
         except Exception as exc:
             logger.exception("orchestrator_failed", case_id=str(case_id), error=str(exc))
+            latency_ms = int((time.monotonic() - start_time) * 1000)
+            self._finalize_agent_run(agent_run_id, "failed", usage, latency_ms, [], error=str(exc))
             self._update_case_status(case_id, "submitted")
             yield _sse("error", {"message": str(exc), "case_id": str(case_id)})
+
+    # ── Memory operation helpers (Retain/Recall SSE taxonomy) ───────────────
+
+    async def _recall_with_events(
+        self,
+        bank_id: str,
+        case_description: str,
+        entity_name: str | None,
+        policy_name: str,
+        top_k: int,
+        log_ctx: OperationLogContext,
+    ) -> tuple[list[str], dict[str, Any]]:
+        """Recall precedents/outcomes/policy-notes for a case, returning SSE
+        events for the RECALL/MEMORY_USED/OPERATION_FAILED taxonomy plus the
+        recalled+deduped buckets (see ``RecallService.recall_structured``).
+        """
+        events = [_sse(EVT_RECALL_STARTED, {"bank_id": bank_id, "query": case_description[:200]})]
+
+        if not bank_id:
+            events.append(_sse(EVT_OPERATION_FAILED, {
+                "operation": "recall",
+                "error": "No Hindsight bank configured for this organisation",
+            }))
+            return events, {"precedents": [], "outcomes": [], "outcome_lessons": [], "policy_notes": [], "merged": []}
+
+        try:
+            buckets = await self.recall_service.recall_structured(
+                bank_id=bank_id,
+                case_description=case_description,
+                entity_name=entity_name,
+                policy_name=policy_name,
+                top_k=top_k,
+                log_ctx=log_ctx,
+            )
+        except Exception as exc:
+            events.append(_sse(EVT_OPERATION_FAILED, {"operation": "recall", "error": str(exc)}))
+            return events, {"precedents": [], "outcomes": [], "outcome_lessons": [], "policy_notes": [], "merged": []}
+
+        for err in buckets.get("errors", []):
+            events.append(_sse(EVT_OPERATION_FAILED, {"operation": "recall", **err}))
+
+        merged = buckets.get("merged", [])
+        events.append(_sse(EVT_RECALL_COMPLETED, {
+            "counts": {k: len(v) for k, v in buckets.items() if k != "errors"},
+        }))
+
+        if merged:
+            events.append(_sse(EVT_MEMORY_USED, {
+                "memories": [
+                    {
+                        "memory_id": m.get("id"),
+                        "score": m.get("score"),
+                        "type": (m.get("metadata") or {}).get("type"),
+                        "document_id": (m.get("metadata") or {}).get("document_id"),
+                        "snippet": (m.get("content") or "")[:160],
+                    }
+                    for m in merged[:5]
+                ],
+            }))
+
+        return events, buckets
+
+    async def _retain_decision_with_events(
+        self,
+        bank_id: str,
+        organization_id: UUID,
+        case_id: UUID,
+        rec_id: UUID,
+        case_facts: dict[str, Any],
+        final_out: dict[str, Any],
+        log_ctx: OperationLogContext,
+    ) -> list[str]:
+        """Retain this case's decision/recommendation as a Hindsight memory
+        under a stable ``case:{org}:{case}:decision:{rec_id}`` document id,
+        emitting RETAIN_STARTED/COMPLETED/OPERATION_FAILED events.
+        """
+        if not bank_id:
+            return []
+
+        document_id = case_decision_document_id(organization_id, case_id, rec_id)
+        events = [_sse(EVT_RETAIN_STARTED, {"document_id": document_id, "bank_id": bank_id})]
+
+        try:
+            await self.retain_service.retain_case_decision(
+                bank_id=bank_id,
+                case_id=case_id,
+                case_title=case_facts.get("title", ""),
+                decision_type=final_out.get("recommendation_type", "needs_more_info"),
+                reasoning=final_out.get("reasoning", ""),
+                metadata={
+                    "entity_name": case_facts.get("entity_name"),
+                    "requested_amount": case_facts.get("requested_amount"),
+                    "recommended_amount": final_out.get("recommended_amount"),
+                    "confidence": final_out.get("confidence"),
+                    "recommendation_id": str(rec_id),
+                },
+                document_id=document_id,
+                log_ctx=log_ctx,
+            )
+            events.append(_sse(EVT_RETAIN_COMPLETED, {"document_id": document_id}))
+        except Exception as exc:
+            events.append(_sse(EVT_OPERATION_FAILED, {"operation": "retain", "document_id": document_id, "error": str(exc)}))
+
+        return events
+
+    def _fallback_event(self, agent_name: str, result: dict[str, Any]) -> str | None:
+        """Emit PROVIDER_FALLBACK if the agent's LLM call fell back from its
+        primary provider (``fallback_path`` non-empty == at least one
+        provider failed before the one that succeeded).
+        """
+        fallback_path = result.get("fallback_path") or []
+        if not fallback_path:
+            return None
+        return _sse(EVT_PROVIDER_FALLBACK, {
+            "agent": agent_name,
+            "failed_providers": fallback_path,
+            "final_provider": result.get("provider"),
+        })
+
+    @staticmethod
+    def _add_usage(usage: AggregatedUsage, result: dict[str, Any]) -> None:
+        if result.get("usage"):
+            usage.add(TokenUsage(**result["usage"]))
 
     # ── Helpers ────────────────────────────────────────────────────────────
 
@@ -333,7 +519,7 @@ class Orchestrator:
         self,
         case_id: UUID,
         final_out: dict[str, Any],
-        precedent_result: dict[str, Any],
+        merged_memories: list[dict[str, Any]],
     ) -> UUID:
         rec_id = uuid4()
         self.supabase.table("recommendations").insert({
@@ -347,7 +533,7 @@ class Orchestrator:
             "reasoning": final_out.get("reasoning", ""),
             "risk_json": json.dumps(final_out.get("risk", {})),
             "provider_summary_json": json.dumps(final_out.get("provider_summary", {})),
-            "hindsight_evidence_json": json.dumps(precedent_result.get("raw_memories", [])),
+            "hindsight_evidence_json": json.dumps(merged_memories),
         }).execute()
         return rec_id
 
@@ -362,25 +548,34 @@ class Orchestrator:
             update["current_recommendation_id"] = str(recommendation_id)
         self.supabase.table("exception_cases").update(update).eq("id", str(case_id)).execute()
 
-    def _save_agent_run(
-        self,
-        case_id: UUID,
-        trace_id: str,
-        final_provider: str,
-        fallback_path: list[str],
-        latency_ms: int,
-        token_usage: dict[str, Any],
-    ) -> None:
+    def _create_agent_run(self, agent_run_id: UUID, case_id: UUID, trace_id: str) -> None:
         self.supabase.table("agent_runs").insert({
-            "id": str(uuid4()),
+            "id": str(agent_run_id),
             "case_id": str(case_id),
             "run_type": "full_debate",
-            "status": "completed",
+            "status": "running",
             "started_at": datetime.utcnow().isoformat(),
-            "completed_at": datetime.utcnow().isoformat(),
             "trace_id": trace_id,
+        }).execute()
+
+    def _finalize_agent_run(
+        self,
+        agent_run_id: UUID,
+        status: str,
+        usage: AggregatedUsage,
+        latency_ms: int,
+        fallback_path: list[str],
+        final_provider: str = "",
+        error: str | None = None,
+    ) -> None:
+        update: dict[str, Any] = {
+            "status": status,
+            "completed_at": datetime.utcnow().isoformat(),
             "final_provider": final_provider,
             "fallback_path_json": json.dumps(fallback_path),
             "latency_ms": latency_ms,
-            "token_usage_json": json.dumps(token_usage),
-        }).execute()
+            "token_usage_json": json.dumps(usage.to_dict()),
+        }
+        if error:
+            update["error_json"] = json.dumps({"message": error})
+        self.supabase.table("agent_runs").update(update).eq("id", str(agent_run_id)).execute()

@@ -1,4 +1,9 @@
-"""Precedent agent — retrieves and ranks historical precedents from Hindsight."""
+"""Precedent agent — ranks and analyses historical precedents recalled from Hindsight.
+
+Recall itself (with SSE instrumentation + ``hindsight_operations`` logging) is
+performed by the orchestrator; this agent receives the already-recalled,
+deduped/ranked memories and produces the precedent analysis.
+"""
 from __future__ import annotations
 
 from typing import Any
@@ -7,7 +12,6 @@ from uuid import UUID
 import structlog
 
 from app.llm.provider_router import ProviderRouter
-from app.memory.hindsight_client import HindsightClient
 
 logger = structlog.get_logger(__name__)
 
@@ -35,23 +39,17 @@ OUTPUT_SCHEMA = """{
 
 
 class PrecedentAgent:
-    def __init__(self, router: ProviderRouter, hindsight: HindsightClient):
+    def __init__(self, router: ProviderRouter):
         self.router = router
-        self.hindsight = hindsight
         self.name = "precedent_agent"
 
     async def run(
         self,
         case_id: UUID,
-        bank_id: str,
         case_facts: dict[str, Any],
-        case_description: str,
-        top_k: int = 10,
+        memories: list[dict[str, Any]],
         demo_mode: bool = False,
     ) -> dict[str, Any]:
-        # Step 1: Recall from Hindsight
-        memories = await self.hindsight.recall(bank_id, case_description, top_k=top_k)
-
         if not memories:
             return {
                 "agent": self.name,
@@ -66,7 +64,6 @@ class PrecedentAgent:
                 "raw_memories": [],
             }
 
-        # Step 2: Rank and analyse with LLM
         memories_text = "\n\n".join(
             f"Memory {i+1} (score={m.get('score', 0):.2f}):\n{m.get('content', '')}"
             for i, m in enumerate(memories[:10])
@@ -101,4 +98,5 @@ class PrecedentAgent:
             "usage": result.get("usage").to_dict() if result.get("usage") else {},
             "output": parsed,
             "raw_memories": memories,
+            "fallback_path": result.get("fallback_path", []),
         }

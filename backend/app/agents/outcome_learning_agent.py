@@ -93,4 +93,5 @@ class OutcomeLearningAgent:
             "provider": result.get("final_provider"),
             "usage": result.get("usage").to_dict() if result.get("usage") else {},
             "output": parsed,
+            "fallback_path": result.get("fallback_path", []),
         }
