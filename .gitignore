@@ -8,6 +8,7 @@ dist/
 build/
 .next/
 out/
+.firebase/
 
 # Environment files — NEVER commit secrets
 .env

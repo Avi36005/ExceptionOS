@@ -310,6 +310,8 @@ Every exception triggers a parallel multi-agent debate before any recommendation
 | **Voice** | ElevenLabs | Conversational voice assistant |
 | **Region** | `asia-south1` | Primary Cloud Run region |
 
+Deployment safety checklist: see [docs/deployment/readiness-runbook.md](docs/deployment/readiness-runbook.md) before running any GCP or Firebase deployment commands.
+
 ### LLM Fallback Chain
 ```
 Groq (Primary Key)

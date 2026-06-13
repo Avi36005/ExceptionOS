@@ -93,7 +93,7 @@ async def invite_member(
     return MessageResponse(message="Invitation sent", data={"email": payload.email})
 
 
-@router.delete("/{organization_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{organization_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
 async def remove_member(
     organization_id: UUID,
     user_id: UUID,

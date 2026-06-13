@@ -141,6 +141,7 @@ export default function App() {
         <Route path="/auth/callback" element={<AuthCallbackPage />} />
         <Route path="/accept-invite" element={<AcceptInvitePage />} />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
+        <Route path="/service-unavailable" element={<UnauthorizedPage />} />
 
         {/* Onboarding */}
         <Route path="/select-organization" element={<AuthGuard><SelectOrg /></AuthGuard>} />
@@ -175,7 +176,9 @@ export default function App() {
             <Route path="recommendation" element={<ExceptionRecommendation />} />
             <Route path="decision" element={<ExceptionDecision />} />
             <Route path="outcome" element={<ExceptionOutcome />} />
+            <Route path="replay" element={<ExceptionAudit />} />
             <Route path="audit" element={<ExceptionAudit />} />
+            <Route path="what-changed" element={<ExceptionRecommendation />} />
             <Route path="memory" element={<ExceptionMemory />} />
           </Route>
 
@@ -184,13 +187,18 @@ export default function App() {
           <Route path="policies/new" element={<NewPolicy />} />
           <Route path="policies/drift" element={<PolicyDrift />} />
           <Route path="policies/simulator" element={<PolicySimulator />} />
+          <Route path="policies/autopilot" element={<PolicySimulator />} />
           <Route path="policies/:policyId" element={<PolicyDetail />} />
           <Route path="policies/:policyId/edit" element={<PolicyEdit />} />
           <Route path="policies/:policyId/versions" element={<PolicyVersions />} />
+          <Route path="policies/:policyId/exceptions" element={<PolicyDetail />} />
+          <Route path="policies/:policyId/drift" element={<PolicyDrift />} />
 
           {/* Precedents */}
           <Route path="precedents" element={<PrecedentSearch />} />
           <Route path="precedents/graph" element={<PrecedentGraph />} />
+          <Route path="precedents/compare" element={<PrecedentSearch />} />
+          <Route path="precedents/contradictions" element={<PrecedentSearch />} />
           <Route path="precedents/ask" element={<PrecedentAsk />} />
           <Route path="precedents/:precedentId" element={<PrecedentDetail />} />
 
@@ -198,19 +206,34 @@ export default function App() {
           <Route path="insights" element={<InsightsDashboard />} />
           <Route path="insights/policy-drift" element={<PolicyDriftInsights />} />
           <Route path="insights/repeated" element={<RepeatedExceptions />} />
+          <Route path="insights/repeated-exceptions" element={<RepeatedExceptions />} />
+          <Route path="insights/root-causes" element={<InsightsDashboard />} />
+          <Route path="insights/consistency" element={<InsightsDashboard />} />
+          <Route path="insights/outcomes" element={<InsightsDashboard />} />
+          <Route path="insights/success" element={<InsightsDashboard />} />
+          <Route path="insights/budgets" element={<InsightsDashboard />} />
+          <Route path="insights/benchmarks" element={<InsightsDashboard />} />
           <Route path="insights/memory-health" element={<MemoryHealth />} />
           <Route path="insights/providers" element={<ProviderUsage />} />
+          <Route path="insights/provider-usage" element={<ProviderUsage />} />
 
           {/* Training */}
           <Route path="training" element={<TrainingLibrary />} />
+          <Route path="training/history" element={<TrainingLibrary />} />
+          <Route path="training/team" element={<TrainingLibrary />} />
+          <Route path="training/scenarios/:scenarioId" element={<TrainingScenario />} />
           <Route path="training/:scenarioId" element={<TrainingScenario />} />
 
           {/* Voice */}
           <Route path="voice" element={<VoiceAssistant />} />
+          <Route path="voice/history" element={<VoiceAssistant />} />
+          <Route path="voice/:sessionId" element={<VoiceAssistant />} />
 
           {/* Integrations */}
           <Route path="integrations" element={<IntegrationCatalog />} />
           <Route path="integrations/openclaw" element={<OpenClawIntegration />} />
+          <Route path="integrations/elevenlabs" element={<IntegrationCatalog />} />
+          <Route path="integrations/hindsight" element={<IntegrationCatalog />} />
 
           {/* Admin */}
           <Route path="admin/organizations" element={<Organizations />} />

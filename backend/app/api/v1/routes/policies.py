@@ -68,7 +68,7 @@ async def update_policy(
     return DataResponse(data=policy)
 
 
-@router.delete("/{policy_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{policy_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
 async def archive_policy(
     policy_id: UUID,
     organization_id: UUID = Query(...),

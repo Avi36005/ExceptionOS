@@ -1,9 +1,12 @@
 """Admin routes — requires admin/owner role."""
 from __future__ import annotations
 
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from supabase import Client
 
+from app.config import get_settings
 from app.dependencies import get_current_user, get_supabase
 from app.schemas import DataResponse
 
@@ -77,4 +80,63 @@ async def admin_stats(
         "total_cases": cases.count or 0,
         "total_decisions": decisions.count or 0,
         "total_agent_runs": runs.count or 0,
+    })
+
+
+@router.get("/system-health")
+async def admin_system_health(
+    current_user: dict = Depends(_require_admin),
+    supabase: Client = Depends(get_supabase),
+) -> DataResponse:
+    """Admin-facing service health and configuration status."""
+    settings = get_settings()
+    services = []
+
+    try:
+        supabase.table("organizations").select("id").limit(1).execute()
+        db_status = "healthy"
+        db_detail = "Supabase query succeeded."
+    except Exception as exc:
+        db_status = "error"
+        db_detail = str(exc)
+
+    services.append({
+        "name": "Supabase",
+        "status": db_status,
+        "detail": db_detail,
+        "last_check": datetime.utcnow().isoformat(),
+    })
+    services.extend([
+        {
+            "name": "Hindsight Cloud",
+            "status": "configured" if settings.HINDSIGHT_API_KEY else "not_configured",
+            "detail": "Primary persistent memory layer.",
+            "last_check": datetime.utcnow().isoformat(),
+        },
+        {
+            "name": "Groq",
+            "status": "configured" if settings.GROQ_API_KEY else "not_configured",
+            "detail": "Primary LLM provider.",
+            "last_check": datetime.utcnow().isoformat(),
+        },
+        {
+            "name": "ElevenLabs",
+            "status": "configured" if settings.ELEVENLABS_API_KEY else "not_configured",
+            "detail": "Optional voice assistant.",
+            "last_check": datetime.utcnow().isoformat(),
+        },
+        {
+            "name": "OpenClaw",
+            "status": "enabled" if settings.ENABLE_OPENCLAW else "disabled",
+            "detail": "Optional integration, disabled by default.",
+            "last_check": datetime.utcnow().isoformat(),
+        },
+    ])
+
+    error_count = sum(1 for service in services if service["status"] == "error")
+    return DataResponse(data={
+        "status": "healthy" if error_count == 0 else "degraded",
+        "timestamp": datetime.utcnow().isoformat(),
+        "environment": settings.APP_ENV,
+        "services": services,
     })

@@ -1,0 +1,9 @@
+# Additional dependencies for the ExceptionOS synthetic-data system.
+# The backend's own requirements.txt already provides: supabase, httpx,
+# python-dotenv, structlog, pydantic. This file adds the generator-only
+# dependency (Faker) on top of that.
+#
+# Install with:
+#   pip install -r backend/requirements.txt -r backend/scripts/synthetic/requirements.txt
+
+Faker>=24.0.0
