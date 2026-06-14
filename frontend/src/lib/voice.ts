@@ -11,8 +11,13 @@ export interface AssistantReply {
   provider?: string
 }
 
-/** Ask the ExceptionOS assistant (real Groq LLM + Hindsight recall). */
-export async function askAssistant(message: string): Promise<AssistantReply> {
+/** Ask the ExceptionOS assistant (real Groq LLM + Hindsight recall).
+ *  opts.bankId  → query a specific org's Hindsight bank (org-aware)
+ *  opts.context → current page/case context so answers are page-aware  */
+export async function askAssistant(
+  message: string,
+  opts: { bankId?: string; context?: string } = {},
+): Promise<AssistantReply> {
   const token = await getAccessToken()
   const res = await fetch(`${API}/api/v1/assistant/chat`, {
     method: 'POST',
@@ -20,7 +25,7 @@ export async function askAssistant(message: string): Promise<AssistantReply> {
       'Content-Type': 'application/json',
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify({ message }),
+    body: JSON.stringify({ message, bank_id: opts.bankId, context: opts.context }),
   })
   if (!res.ok) {
     throw new Error(res.status === 401 ? 'Please sign in to chat' : `Assistant failed (${res.status})`)

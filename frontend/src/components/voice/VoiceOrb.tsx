@@ -1,9 +1,18 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Mic, Send, X, Volume2, Square, Loader2, Sparkles, MessageSquare } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { speakWithElevenLabs, stopSpeech, askAssistant } from '../../lib/voice'
+import { useOrgStore } from '../../store/orgStore'
+import { getCase } from '../../lib/demoData'
 
 interface Msg { role: 'user' | 'assistant'; text: string }
+
+/** Parse the exception case id from a path like /app/exceptions/EX-108/intake. */
+function caseIdFromPath(pathname: string): string | undefined {
+  const m = pathname.match(/\/app\/exceptions\/([^/]+)/)
+  return m ? m[1] : undefined
+}
 
 /**
  * Global floating assistant orb — REAL chat + REAL voice, on every page.
@@ -22,6 +31,29 @@ export default function VoiceOrb() {
   const [listening, setListening] = useState(false)
   const recRef = useRef<any>(null)
   const endRef = useRef<HTMLDivElement>(null)
+  const location = useLocation()
+  const { currentOrg } = useOrgStore()
+
+  // Org-aware: query the selected org's Hindsight bank.
+  const bankId = currentOrg?.slug ? `synthetic-bank-${currentOrg.slug}` : undefined
+
+  // Page-aware: tell the assistant which page / case the user is viewing.
+  const buildContext = useCallback(() => {
+    const parts: string[] = []
+    if (currentOrg?.name) parts.push(`Organization: ${currentOrg.name}.`)
+    const id = caseIdFromPath(location.pathname)
+    const c = id ? getCase(id) : undefined
+    if (c) {
+      parts.push(
+        `The user is currently viewing case ${c.id} (${c.customer}): "${c.title}". ` +
+        `Category ${c.category}, status ${c.status}, amount ${c.amount}. ` +
+        `Reason: ${c.reason} Recommendation: ${c.recommendation} Decision: ${c.decision} Outcome: ${c.outcome}`,
+      )
+    } else {
+      parts.push(`The user is on page: ${location.pathname}.`)
+    }
+    return parts.join(' ')
+  }, [currentOrg, location.pathname])
 
   useEffect(() => { endRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages, open])
 
@@ -56,7 +88,7 @@ export default function VoiceOrb() {
     setMessages(m => [...m, { role: 'user', text: q }])
     setSending(true)
     try {
-      const reply = await askAssistant(q)
+      const reply = await askAssistant(q, { bankId, context: buildContext() })
       setMessages(m => {
         const next: Msg[] = [...m, { role: 'assistant', text: reply.answer }]
         // Auto-speak the answer with real ElevenLabs.
@@ -68,7 +100,7 @@ export default function VoiceOrb() {
     } finally {
       setSending(false)
     }
-  }, [sending, speak])
+  }, [sending, speak, bankId, buildContext])
 
   const toggleMic = () => {
     const rec = recRef.current

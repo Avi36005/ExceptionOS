@@ -41,7 +41,8 @@ async def assistant_chat(
 ) -> DataResponse:
     """Answer a free-form question using Hindsight recall + the live LLM chain."""
     message = (payload.get("message") or "").strip()
-    bank_id = payload.get("bank_id") or DEFAULT_BANK
+    bank_id = payload.get("bank_id") or DEFAULT_BANK  # org-aware: per-org Hindsight bank
+    page_context = (payload.get("context") or "").strip()  # page-aware: current case/page
     if not message:
         return DataResponse(data={"answer": "Please ask me something.", "sources": []})
 
@@ -67,7 +68,13 @@ async def assistant_chat(
         if lines:
             context = "Relevant past memories from Hindsight:\n" + "\n".join(lines)
 
-    user_content = message if not context else f"{context}\n\nQuestion: {message}"
+    blocks = []
+    if page_context:
+        blocks.append(f"Current screen context (use it if the question is about 'this' case/page):\n{page_context}")
+    if context:
+        blocks.append(context)
+    blocks.append(f"Question: {message}")
+    user_content = "\n\n".join(blocks)
 
     # 2. Answer with the real LLM provider chain (Groq primary).
     try:
