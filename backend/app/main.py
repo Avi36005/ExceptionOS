@@ -94,6 +94,7 @@ def create_app() -> FastAPI:
     from app.api.v1.routes.admin import router as admin_router
     from app.api.v1.routes.notifications import router as notifications_router
     from app.api.v1.routes.integrations.openclaw import router as openclaw_router
+    from app.api.v1.routes.integrations.slack import router as slack_router
     from app.api.v1.routes.assistant import router as assistant_router
 
     prefix = "/api/v1"
@@ -115,6 +116,7 @@ def create_app() -> FastAPI:
     app.include_router(admin_router, prefix=prefix)
     app.include_router(notifications_router, prefix=prefix)
     app.include_router(openclaw_router, prefix=prefix)
+    app.include_router(slack_router, prefix=prefix)
     app.include_router(assistant_router, prefix=prefix)
 
     # Root

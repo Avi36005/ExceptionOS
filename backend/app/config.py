@@ -53,6 +53,9 @@ class Settings(BaseSettings):
     # OpenClaw (optional bonus integration — see app/api/v1/routes/integrations/openclaw.py)
     OPENCLAW_WEBHOOK_SECRET: str = ""
 
+    # Slack (optional outbound notifications via Incoming Webhook)
+    SLACK_WEBHOOK_URL: str = ""
+
     # GCP / deployment
     GCP_REGION: str = "asia-south1"
     APP_ENV: str = "development"

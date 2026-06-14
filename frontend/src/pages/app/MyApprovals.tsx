@@ -1,9 +1,17 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { CheckSquare, Search, Clock, AlertTriangle } from 'lucide-react'
+import toast from 'react-hot-toast'
 import StatusBadge from '../../components/ui/StatusBadge'
 import EmptyState from '../../components/ui/EmptyState'
 import { pendingCases, decidedCases, priorityPill as priorityColor } from '../../lib/demoData'
+import { slackNotify } from '../../lib/slack'
+
+function notifyDecision(c: { id: string; title: string; amount: string }, decision: 'approved' | 'rejected') {
+  slackNotify({ event: decision, case_id: c.id, title: c.title, amount: c.amount, actor: 'You' })
+    .then(() => toast.success(`Sent to Slack: ${c.id} ${decision}`))
+    .catch(() => {/* Slack is best-effort; never block the decision */})
+}
 
 const pending = pendingCases().map(c => ({
   id: c.id, title: c.title, category: c.category, submitter: c.submitter,
@@ -86,7 +94,7 @@ export default function MyApprovals() {
                 </div>
               </div>
               <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100">
-                <button onClick={e => { e.stopPropagation(); navigate(`/app/exceptions/${r.id}/decision`) }}
+                <button onClick={e => { e.stopPropagation(); notifyDecision(r, 'approved'); navigate(`/app/exceptions/${r.id}/decision`) }}
                   className="flex-1 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition-colors">
                   Approve
                 </button>
@@ -94,7 +102,7 @@ export default function MyApprovals() {
                   className="flex-1 py-2 rounded-lg bg-gray-100 hover:bg-gray-100 text-gray-900 text-sm font-medium border border-gray-200 transition-colors">
                   Review
                 </button>
-                <button onClick={e => { e.stopPropagation(); navigate(`/app/exceptions/${r.id}/decision`) }}
+                <button onClick={e => { e.stopPropagation(); notifyDecision(r, 'rejected'); navigate(`/app/exceptions/${r.id}/decision`) }}
                   className="flex-1 py-2 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 text-sm font-medium transition-colors">
                   Reject
                 </button>

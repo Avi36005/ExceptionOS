@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Plug, CheckCircle, ExternalLink } from 'lucide-react'
+import toast from 'react-hot-toast'
+import { slackTest } from '../../../lib/slack'
 
 const integrations = [
   { id: 'openclaw', name: 'OpenClaw', category: 'Legal AI', desc: 'AI-powered legal document analysis and contract review integration.', connected: false, featured: true },
@@ -42,10 +44,15 @@ export default function IntegrationCatalog() {
             </div>
             <p className="text-sm text-gray-500 mb-4">{intg.desc}</p>
             <button
-              onClick={() => intg.id === 'openclaw' ? navigate('/app/integrations/openclaw') : undefined}
+              onClick={() => {
+                if (intg.id === 'openclaw') navigate('/app/integrations/openclaw')
+                else if (intg.id === 'slack') slackTest()
+                  .then(r => toast.success(r.message || 'Test message sent to Slack'))
+                  .catch(() => toast.error('Could not reach Slack'))
+              }}
               className={`w-full py-2 rounded-lg text-xs font-medium transition-colors ${intg.connected ? 'bg-gray-50 hover:bg-gray-100 text-gray-600 border border-gray-200' : 'bg-primary/10 hover:bg-primary/20 text-primary'}`}
             >
-              {intg.connected ? 'Manage' : 'Connect'}
+              {intg.id === 'slack' ? 'Send test message' : intg.connected ? 'Manage' : 'Connect'}
               {intg.id === 'openclaw' && <ExternalLink className="w-3 h-3 inline ml-1" />}
             </button>
           </div>
