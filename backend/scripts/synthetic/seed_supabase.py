@@ -140,21 +140,29 @@ def load(dataset: dict[str, Any], dry_run: bool, do_reset: bool) -> int:
         reset_synthetic(client, dry_run=False)
 
     written = 0
+    case_patches: list[dict[str, Any]] = []
     for table in TABLE_LOAD_ORDER:
         items = rows.get(table)
         if not items:
             continue
         if table == "exception_cases":
-            insert_rows, patches = _prepare_case_rows(items)
+            # Insert cases with deferred FK columns stripped. The
+            # current_recommendation_id patch is applied at the very end, once
+            # the recommendations table (loaded later) is present — otherwise
+            # the fk_current_recommendation constraint fails.
+            insert_rows, case_patches = _prepare_case_rows(items)
             written += _upsert(client, table, insert_rows)
-            for patch in patches:
-                client.table(table).update(
-                    {k: v for k, v in patch.items() if k != "id"}
-                ).eq("id", patch["id"]).execute()
-            if patches:
-                print(f"  patched current_recommendation_id on {len(patches)} cases")
         else:
             written += _upsert(client, table, items)
+
+    # Now that all parent tables (incl. recommendations) are loaded, backfill
+    # the deferred exception_cases FK columns.
+    for patch in case_patches:
+        client.table("exception_cases").update(
+            {k: v for k, v in patch.items() if k != "id"}
+        ).eq("id", patch["id"]).execute()
+    if case_patches:
+        print(f"  patched deferred FK columns on {len(case_patches)} cases")
     print(f"done: upserted {written} rows.")
     return 0
 

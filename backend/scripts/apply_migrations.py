@@ -28,7 +28,7 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
-from urllib.parse import urlparse
+from urllib.parse import quote, urlparse
 
 BACKEND_DIR = Path(__file__).resolve().parents[1]
 if str(BACKEND_DIR) not in sys.path:
@@ -53,7 +53,10 @@ def _resolve_dsn(cli_dsn: str | None) -> str | None:
         # https://<ref>.supabase.co -> db.<ref>.supabase.co
         ref = host.split(".")[0]
         if ref:
-            return f"postgresql://postgres:{password}@db.{ref}.supabase.co:5432/postgres"
+            # URL-encode the password so special chars (@, :, /, etc.) don't
+            # corrupt the libpq URI parse.
+            pw = quote(password, safe="")
+            return f"postgresql://postgres:{pw}@db.{ref}.supabase.co:5432/postgres"
     return None
 
 
