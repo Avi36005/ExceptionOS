@@ -21,11 +21,17 @@ router = APIRouter(prefix="/assistant", tags=["assistant"])
 DEFAULT_BANK = "synthetic-bank-acme"
 
 SYSTEM_PROMPT = (
-    "You are the ExceptionOS assistant. You help users understand policy exceptions, "
-    "precedents, and decisions. Answer concisely (2-4 sentences), in a natural spoken "
-    "tone suitable for being read aloud. When relevant memories are provided, ground "
-    "your answer in them and mention you found similar past cases."
+    "You are the ExceptionOS assistant — a friendly, professional helper for policy "
+    "exceptions, precedents, and decisions. Keep replies short (1-3 sentences) and in a "
+    "natural spoken tone suitable for being read aloud.\n"
+    "- For greetings or small talk (hi, hello, thanks), reply warmly in ONE sentence and "
+    "invite the user to ask about an exception, policy, or precedent. Do NOT list past cases.\n"
+    "- Only when the user actually asks about a case, refund, discount, policy, or decision, "
+    "use the provided past memories and briefly reference the relevant ones.\n"
+    "- Never dump or enumerate memories that the user did not ask about."
 )
+
+GREETINGS = {"hi", "hii", "hey", "hello", "yo", "hola", "thanks", "thank you", "ok", "okay", "good morning", "good evening", "good afternoon", "sup", "how are you"}
 
 
 @router.post("/chat")
@@ -39,12 +45,17 @@ async def assistant_chat(
     if not message:
         return DataResponse(data={"answer": "Please ask me something.", "sources": []})
 
-    # 1. Recall grounding memories from Hindsight (best-effort).
+    # Greetings / small talk: skip Hindsight entirely and just reply warmly.
+    normalized = message.lower().strip(" .!?")
+    is_smalltalk = normalized in GREETINGS or len(normalized) <= 3
+
+    # 1. Recall grounding memories from Hindsight (best-effort) for real queries only.
     memories: list[dict] = []
-    try:
-        memories = await RecallService(get_hindsight_client()).recall_all(bank_id, message, top_k=5)
-    except Exception as exc:  # noqa: BLE001
-        logger.warning("assistant_recall_failed", error=str(exc))
+    if not is_smalltalk:
+        try:
+            memories = await RecallService(get_hindsight_client()).recall_all(bank_id, message, top_k=5)
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("assistant_recall_failed", error=str(exc))
 
     context = ""
     if memories:
