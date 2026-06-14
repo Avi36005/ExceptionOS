@@ -3,6 +3,23 @@ import { Brain, Send, User } from 'lucide-react'
 
 interface Message { role: 'user' | 'assistant'; content: string }
 
+/** Render light markdown: **bold** becomes bold, leading #/## headers are stripped. */
+function renderContent(text: string) {
+  return text.split('\n').map((line, li) => {
+    const clean = line.replace(/^#+\s*/, '')
+    const parts = clean.split(/(\*\*[^*]+\*\*)/g)
+    return (
+      <div key={li}>
+        {parts.map((p, i) =>
+          p.startsWith('**') && p.endsWith('**')
+            ? <strong key={i} className="font-semibold text-gray-900">{p.slice(2, -2)}</strong>
+            : p,
+        )}
+      </div>
+    )
+  })
+}
+
 const suggestions = [
   'How have we handled emergency software procurement in the past?',
   'What is the approval rate for HR contractor rate exceptions?',
@@ -51,8 +68,8 @@ export default function PrecedentAsk() {
               <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${m.role === 'assistant' ? 'bg-primary/20' : 'bg-gray-100'}`}>
                 {m.role === 'assistant' ? <Brain className="w-3.5 h-3.5 text-primary" /> : <User className="w-3.5 h-3.5 text-gray-600" />}
               </div>
-              <div className={`max-w-lg rounded-2xl px-4 py-3 text-sm leading-relaxed whitespace-pre-line ${m.role === 'assistant' ? 'bg-gray-50 text-gray-700 rounded-tl-none' : 'bg-primary/20 text-gray-900 rounded-tr-none'}`}>
-                {m.content}
+              <div className={`max-w-lg rounded-2xl px-4 py-3 text-sm leading-relaxed space-y-1 ${m.role === 'assistant' ? 'bg-gray-50 text-gray-700 rounded-tl-none' : 'bg-primary/20 text-gray-900 rounded-tr-none'}`}>
+                {m.role === 'assistant' ? renderContent(m.content) : m.content}
               </div>
             </div>
           ))}
