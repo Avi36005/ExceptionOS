@@ -17,10 +17,11 @@ logger = structlog.get_logger(__name__)
 class HindsightClient:
     """Async HTTP client wrapping the Hindsight Cloud REST API."""
 
-    def __init__(self, api_key: str | None = None, base_url: str | None = None):
+    def __init__(self, api_key: str | None = None, base_url: str | None = None, namespace: str | None = None):
         settings = get_settings()
         self.api_key = api_key or settings.HINDSIGHT_API_KEY
         self.base_url = (base_url or settings.HINDSIGHT_BASE_URL).rstrip("/")
+        self.namespace = namespace or getattr(settings, "HINDSIGHT_NAMESPACE", "default")
         self._client: httpx.AsyncClient | None = None
 
     @property
@@ -29,6 +30,26 @@ class HindsightClient:
             "Authorization": f"Bearer {self.api_key}",
             "Content-Type": "application/json",
         }
+
+    def _bank_url(self, bank_id: str, suffix: str = "") -> str:
+        """Build a namespaced bank URL: /v1/<namespace>/banks/<bank_id><suffix>."""
+        return f"{self.base_url}/v1/{self.namespace}/banks/{bank_id}{suffix}"
+
+    @staticmethod
+    def _string_metadata(metadata: dict[str, Any]) -> dict[str, str]:
+        """Hindsight MemoryItem.metadata only accepts string values. Coerce
+        scalars to strings and JSON-encode anything structured; drop None."""
+        import json as _json
+
+        flat: dict[str, str] = {}
+        for key, value in (metadata or {}).items():
+            if value is None:
+                continue
+            if isinstance(value, (str, int, float, bool)):
+                flat[key] = str(value)
+            else:
+                flat[key] = _json.dumps(value, default=str)
+        return flat
 
     @property
     def http(self) -> httpx.AsyncClient:
@@ -61,11 +82,19 @@ class HindsightClient:
         (see ``app.memory.document_ids``) recorded in metadata so repeated
         retains of the same logical memory can be deduplicated on recall.
         """
-        url = f"{self.base_url}/v1/banks/{bank_id}/memories"
+        url = self._bank_url(bank_id, "/memories")
         meta = dict(metadata)
+        tags = meta.pop("tags", None) or meta.pop("memory_tags", None)
+        item: dict[str, Any] = {
+            "content": content,
+            "metadata": self._string_metadata(meta),
+        }
         if document_id:
-            meta["document_id"] = document_id
-        payload = {"content": content, "metadata": meta}
+            item["document_id"] = document_id
+            item["update_mode"] = "replace"
+        if isinstance(tags, (list, tuple)):
+            item["tags"] = [str(t) for t in tags]
+        payload = {"items": [item], "async": False}
         started = time.monotonic()
         try:
             resp = await retry_async(
@@ -77,6 +106,15 @@ class HindsightClient:
             )
             resp.raise_for_status()
             data = resp.json()
+            if isinstance(data, dict) and "id" not in data:
+                # Retain returns batch info; surface the first memory/document id.
+                first_id = None
+                for key in ("memory_ids", "document_ids", "ids", "results"):
+                    seq = data.get(key)
+                    if isinstance(seq, list) and seq:
+                        first_id = seq[0].get("id") if isinstance(seq[0], dict) else seq[0]
+                        break
+                data = {**data, "id": first_id or document_id}
             latency_ms = int((time.monotonic() - started) * 1000)
             logger.info("hindsight_retain", bank_id=bank_id, memory_id=data.get("id"), document_id=document_id)
             log_hindsight_operation(
@@ -135,12 +173,17 @@ class HindsightClient:
     ) -> list[dict[str, Any]]:
         """Retrieve relevant memories from Hindsight.
 
-        POST /v1/banks/{bank_id}/query
+        POST /v1/<namespace>/banks/{bank_id}/memories/recall
         """
-        url = f"{self.base_url}/v1/banks/{bank_id}/query"
-        payload: dict[str, Any] = {"query": query, "top_k": top_k}
+        url = self._bank_url(bank_id, "/memories/recall")
+        payload: dict[str, Any] = {"query": query, "limit": top_k}
         if metadata_filter:
-            payload["filter"] = metadata_filter
+            tags = metadata_filter.get("tags")
+            if isinstance(tags, (list, tuple)):
+                payload["tags"] = [str(t) for t in tags]
+            payload["metadata"] = self._string_metadata(
+                {k: v for k, v in metadata_filter.items() if k != "tags"}
+            )
         started = time.monotonic()
         try:
             resp = await retry_async(
@@ -152,7 +195,12 @@ class HindsightClient:
             )
             resp.raise_for_status()
             data = resp.json()
-            memories: list[dict[str, Any]] = data.get("memories", data.get("results", []))
+            memories: list[dict[str, Any]] = (
+                data.get("memories")
+                or data.get("results")
+                or data.get("items")
+                or []
+            )
             latency_ms = int((time.monotonic() - started) * 1000)
             logger.info(
                 "hindsight_recall",
@@ -213,10 +261,10 @@ class HindsightClient:
     ) -> dict[str, Any]:
         """Reflect on accumulated memories.
 
-        POST /v1/banks/{bank_id}/reflect
+        POST /v1/<namespace>/banks/{bank_id}/reflect
         """
-        url = f"{self.base_url}/v1/banks/{bank_id}/reflect"
-        payload = {"topic": topic}
+        url = self._bank_url(bank_id, "/reflect")
+        payload = {"query": topic}
         started = time.monotonic()
         try:
             resp = await retry_async(
@@ -271,30 +319,49 @@ class HindsightClient:
             )
             return {"topic": topic, "reflection": "", "error": str(exc)}
 
-    async def create_bank(self, name: str, description: str = "") -> dict[str, Any]:
-        """Create a new memory bank.
+    @staticmethod
+    def _slug_bank_id(name: str) -> str:
+        """Derive a stable, URL-safe bank id from a human name. Hindsight
+        bank ids are client-chosen path segments, so they must be slugs."""
+        import re
 
-        POST /v1/banks
+        slug = re.sub(r"[^a-zA-Z0-9_-]+", "-", name.strip().lower()).strip("-")
+        return slug[:120] or "exceptionos-bank"
+
+    async def create_bank(
+        self, name: str, description: str = "", bank_id: str | None = None
+    ) -> dict[str, Any]:
+        """Create (or upsert) a memory bank.
+
+        PUT /v1/<namespace>/banks/{bank_id}
+
+        Hindsight uses client-chosen bank ids. When no id is given we derive a
+        stable slug from ``name`` so repeated calls are idempotent.
         """
-        url = f"{self.base_url}/v1/banks"
+        bank_id = bank_id or self._slug_bank_id(name)
+        url = self._bank_url(bank_id)
         payload = {"name": name, "description": description}
-        resp = await self.http.post(url, json=payload, headers=self.headers)
+        resp = await self.http.put(url, json=payload, headers=self.headers)
         resp.raise_for_status()
-        return resp.json()
+        data = resp.json() if resp.content else {}
+        if not isinstance(data, dict):
+            data = {}
+        data.setdefault("id", bank_id)
+        return data
 
     async def get_bank(self, bank_id: str) -> dict[str, Any]:
         """Get bank info.
 
-        GET /v1/banks/{bank_id}
+        GET /v1/<namespace>/banks/{bank_id}
         """
-        url = f"{self.base_url}/v1/banks/{bank_id}"
+        url = self._bank_url(bank_id)
         resp = await self.http.get(url, headers=self.headers)
         resp.raise_for_status()
         return resp.json()
 
     async def delete_memory(self, bank_id: str, memory_id: str) -> None:
         """Delete a specific memory."""
-        url = f"{self.base_url}/v1/banks/{bank_id}/memories/{memory_id}"
+        url = self._bank_url(bank_id, f"/memories/{memory_id}")
         resp = await self.http.delete(url, headers=self.headers)
         resp.raise_for_status()
 

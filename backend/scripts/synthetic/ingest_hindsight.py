@@ -128,6 +128,15 @@ async def _ingest(memories: list[dict[str, Any]]) -> int:
     client = HindsightClient()
     ok = 0
     try:
+        # Banks use client-chosen ids and must exist before retaining. PUT is
+        # idempotent, so creating each unique bank up front is safe to repeat.
+        for bank_id in sorted({m["bank_id"] for m in memories}):
+            await client.create_bank(
+                name=bank_id,
+                description="ExceptionOS synthetic memory bank",
+                bank_id=bank_id,
+            )
+            print(f"  bank ready: {bank_id}")
         for memory in memories:
             await client.retain(
                 bank_id=memory["bank_id"],

@@ -38,6 +38,8 @@ class Settings(BaseSettings):
     # Hindsight
     HINDSIGHT_API_KEY: str = ""
     HINDSIGHT_BASE_URL: str = "https://api.hindsight.vectorize.io"
+    # Namespace segment in the Hindsight Cloud REST path (/v1/<namespace>/banks/...)
+    HINDSIGHT_NAMESPACE: str = "default"
 
     # ElevenLabs
     ELEVENLABS_API_KEY: str = ""
