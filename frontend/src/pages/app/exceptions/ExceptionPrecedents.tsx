@@ -15,32 +15,31 @@ export default function ExceptionPrecedents() {
       <div className="flex items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-xl">
         <Search className="w-5 h-5 text-primary shrink-0" />
         <div>
-          <div className="text-sm font-semibold text-white">4 similar precedents found</div>
-          <div className="text-xs text-gray-400 mt-0.5">AI found 3 approved and 1 rejected precedent. Approval rate for similar IT emergency exceptions: 82%.</div>
+          <div className="text-sm font-semibold text-gray-900">4 similar precedents found</div>
+          <div className="text-xs text-gray-500 mt-0.5">AI found 3 approved and 1 rejected precedent. Approval rate for similar IT emergency exceptions: 82%.</div>
         </div>
       </div>
 
       {precedents.map(p => (
-        <div key={p.id} className="bg-dark2 rounded-xl border border-white/10 p-5">
+        <div key={p.id} className="bg-white rounded-xl border border-gray-200 p-5">
           <div className="flex items-start justify-between gap-4 mb-3">
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xs font-mono text-gray-500">{p.id}</span>
                 <span className="text-xs text-gray-600">·</span>
                 <span className="text-xs text-gray-500">{p.date}</span>
-                <span className={`px-2 py-0.5 rounded text-xs font-medium ${p.similarity}% match flex items-center gap-1`}></span>
               </div>
-              <h3 className="text-sm font-semibold text-white">{p.title}</h3>
+              <h3 className="text-sm font-semibold text-gray-900">{p.title}</h3>
             </div>
             <div className="flex items-center gap-2 shrink-0">
-              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium ${p.decision === 'approved' ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium ${p.decision === 'approved' ? 'bg-green-50 text-green-700 ring-1 ring-green-600/20' : 'bg-red-50 text-red-700 ring-1 ring-red-600/20'}`}>
                 {p.decision === 'approved' ? <CheckCircle className="w-3.5 h-3.5" /> : <XCircle className="w-3.5 h-3.5" />}
                 {p.decision.charAt(0).toUpperCase() + p.decision.slice(1)}
               </div>
               <span className="text-xs text-primary font-semibold">{p.similarity}% match</span>
             </div>
           </div>
-          <p className="text-xs text-gray-400 leading-relaxed mb-3 italic">"{p.rationale}"</p>
+          <p className="text-xs text-gray-500 leading-relaxed mb-3 italic">"{p.rationale}"</p>
           <button onClick={() => navigate(`/app/precedents/${p.id}`)} className="flex items-center gap-1 text-xs text-primary hover:text-primary-dark font-medium transition-colors">
             View full precedent <ArrowRight className="w-3 h-3" />
           </button>

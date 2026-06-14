@@ -59,3 +59,9 @@ screenshots/
 uploads/
 .thumbnail
 frontend-extracted/
+
+# Local clutter (not part of the project)
+Downloads/
+frontend-extracted/
+"4th website (2)"/
+*.pdf

@@ -11,9 +11,9 @@ const scenarios = [
 ]
 
 const diffColors: Record<string, string> = {
-  Beginner: 'bg-green-500/20 text-green-400',
-  Intermediate: 'bg-yellow-500/20 text-yellow-400',
-  Advanced: 'bg-red-500/20 text-red-400',
+  Beginner: 'bg-green-50 text-green-700 ring-1 ring-green-600/20',
+  Intermediate: 'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20',
+  Advanced: 'bg-red-50 text-red-700 ring-1 ring-red-600/20',
 }
 
 export default function TrainingLibrary() {
@@ -25,24 +25,24 @@ export default function TrainingLibrary() {
         <div className="flex items-center gap-3">
           <GraduationCap className="w-6 h-6 text-primary" />
           <div>
-            <h1 className="text-2xl font-bold text-white">Training Library</h1>
-            <p className="text-sm text-gray-400 mt-1">Interactive scenarios to improve exception decision-making skills.</p>
+            <h1 className="text-2xl font-bold text-gray-900">Training Library</h1>
+            <p className="text-sm text-gray-500 mt-1">Interactive scenarios to improve exception decision-making skills.</p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {scenarios.map(s => (
-          <div key={s.id} className="bg-dark2 rounded-xl border border-white/10 p-5 hover:border-primary/30 transition-all cursor-pointer"
+          <div key={s.id} className="bg-white rounded-xl border border-gray-200 p-5 hover:border-primary/30 transition-all cursor-pointer"
             onClick={() => navigate(`/app/training/${s.id}`)}>
             <div className="flex items-center justify-between mb-3">
               <span className={`px-2 py-0.5 rounded text-xs font-medium ${diffColors[s.difficulty]}`}>{s.difficulty}</span>
               <span className="text-xs text-gray-500">{s.category}</span>
             </div>
-            <h3 className="text-sm font-semibold text-white mb-3 leading-snug">{s.title}</h3>
+            <h3 className="text-sm font-semibold text-gray-900 mb-3 leading-snug">{s.title}</h3>
             <div className="flex items-center justify-between text-xs text-gray-500">
               <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{s.duration}</span>
-              <span className="flex items-center gap-1"><Star className="w-3 h-3 text-yellow-400" />{s.rating}</span>
+              <span className="flex items-center gap-1"><Star className="w-3 h-3 text-yellow-500" />{s.rating}</span>
               <span>{s.completions} completions</span>
             </div>
             <button className="w-full mt-4 flex items-center justify-center gap-2 py-2 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-xs font-medium transition-colors">

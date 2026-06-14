@@ -14,10 +14,10 @@ export default function AuthCallbackPage() {
   }, [navigate])
 
   return (
-    <div className="min-h-screen bg-dark flex items-center justify-center">
+    <div className="min-h-screen bg-light flex items-center justify-center">
       <div className="text-center">
         <LoadingSpinner size="lg" />
-        <p className="text-gray-400 text-sm mt-4">Completing sign in...</p>
+        <p className="text-gray-500 text-sm mt-4">Completing sign in...</p>
       </div>
     </div>
   )

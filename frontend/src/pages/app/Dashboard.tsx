@@ -30,10 +30,10 @@ const recentExceptions = [
 ]
 
 const statusMap: Record<string, { label: string; class: string }> = {
-  submitted: { label: 'Submitted', class: 'bg-blue-500/20 text-blue-400' },
-  under_review: { label: 'Under Review', class: 'bg-yellow-500/20 text-yellow-400' },
-  approved: { label: 'Approved', class: 'bg-green-500/20 text-green-400' },
-  rejected: { label: 'Rejected', class: 'bg-red-500/20 text-red-400' },
+  submitted: { label: 'Submitted', class: 'bg-blue-50 text-blue-700 ring-1 ring-blue-200' },
+  under_review: { label: 'Under Review', class: 'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-200' },
+  approved: { label: 'Approved', class: 'bg-green-50 text-green-700 ring-1 ring-green-200' },
+  rejected: { label: 'Rejected', class: 'bg-red-50 text-red-700 ring-1 ring-red-200' },
 }
 
 const priorityColors: Record<string, string> = {
@@ -43,10 +43,10 @@ const priorityColors: Record<string, string> = {
 }
 
 const stats = [
-  { label: 'Open Exceptions', value: '23', change: '+3', up: true, icon: Clock, color: 'text-blue-400' },
-  { label: 'Approved This Month', value: '51', change: '+34%', up: true, icon: CheckCircle, color: 'text-green-400' },
-  { label: 'Rejected', value: '12', change: '-8%', up: false, icon: XCircle, color: 'text-red-400' },
-  { label: 'Escalated', value: '4', change: '+1', up: true, icon: AlertTriangle, color: 'text-orange-400' },
+  { label: 'Open Exceptions', value: '23', change: '+3', up: true, icon: Clock, color: 'text-blue-600' },
+  { label: 'Approved This Month', value: '51', change: '+34%', up: true, icon: CheckCircle, color: 'text-green-600' },
+  { label: 'Rejected', value: '12', change: '-8%', up: false, icon: XCircle, color: 'text-red-600' },
+  { label: 'Escalated', value: '4', change: '+1', up: true, icon: AlertTriangle, color: 'text-orange-600' },
 ]
 
 export default function Dashboard() {
@@ -60,8 +60,8 @@ export default function Dashboard() {
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Good morning, {firstName} 👋</h1>
-          <p className="text-gray-400 text-sm mt-1">{currentOrg?.name || 'ExceptionOS'} · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+          <h1 className="text-2xl font-bold text-gray-900">Good morning, {firstName} 👋</h1>
+          <p className="text-gray-500 text-sm mt-1">{currentOrg?.name || 'ExceptionOS'} · {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
         </div>
         <button onClick={() => navigate('/app/exceptions/new')}
           className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-dark text-white font-medium text-sm transition-colors">
@@ -72,13 +72,13 @@ export default function Dashboard() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map(s => (
-          <div key={s.label} className="bg-dark2 rounded-xl border border-white/10 p-5">
+          <div key={s.label} className="bg-white rounded-xl border border-gray-200 p-5">
             <div className="flex items-center justify-between mb-3">
               <span className="text-xs text-gray-500 font-medium uppercase tracking-wide">{s.label}</span>
               <s.icon className={`w-4 h-4 ${s.color}`} />
             </div>
-            <div className="text-2xl font-bold text-white mb-1">{s.value}</div>
-            <div className={`flex items-center gap-1 text-xs font-medium ${s.up ? 'text-green-400' : 'text-red-400'}`}>
+            <div className="text-2xl font-bold text-gray-900 mb-1">{s.value}</div>
+            <div className={`flex items-center gap-1 text-xs font-medium ${s.up ? 'text-green-600' : 'text-red-600'}`}>
               {s.up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
               {s.change} vs last month
             </div>
@@ -89,16 +89,16 @@ export default function Dashboard() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Area chart */}
-        <div className="lg:col-span-2 bg-dark2 rounded-xl border border-white/10 p-6">
+        <div className="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-sm font-semibold text-white">Exception Volume</h2>
+              <h2 className="text-sm font-semibold text-gray-900">Exception Volume</h2>
               <p className="text-xs text-gray-500 mt-0.5">Last 6 months</p>
             </div>
             <div className="flex items-center gap-4 text-xs text-gray-500">
               <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-primary" />Submitted</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-400" />Approved</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-400" />Rejected</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500" />Approved</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" />Rejected</span>
             </div>
           </div>
           <ResponsiveContainer width="100%" height={200}>
@@ -109,7 +109,7 @@ export default function Dashboard() {
                   <stop offset="95%" stopColor="#5B5BF0" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+              <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
               <XAxis dataKey="month" tick={{ fill: '#6B7280', fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: '#6B7280', fontSize: 12 }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ backgroundColor: '#0C0F24', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#F4F5FA' }} />
@@ -121,9 +121,9 @@ export default function Dashboard() {
         </div>
 
         {/* Bar chart */}
-        <div className="bg-dark2 rounded-xl border border-white/10 p-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-6">
           <div className="mb-6">
-            <h2 className="text-sm font-semibold text-white">By Category</h2>
+            <h2 className="text-sm font-semibold text-gray-900">By Category</h2>
             <p className="text-xs text-gray-500 mt-0.5">This month</p>
           </div>
           <ResponsiveContainer width="100%" height={200}>
@@ -147,7 +147,7 @@ export default function Dashboard() {
             <span className="text-xs font-semibold text-primary uppercase tracking-wide">Hindsight™ Insight</span>
             <span className="w-1.5 h-1.5 bg-primary rounded-full pulse-dot" />
           </div>
-          <p className="text-sm text-gray-300">IT exception volume is up 31% this month — 7 out of 10 involve software licensing. Consider updating your IT procurement policy threshold to reduce repeat exceptions.</p>
+          <p className="text-sm text-gray-600">IT exception volume is up 31% this month — 7 out of 10 involve software licensing. Consider updating your IT procurement policy threshold to reduce repeat exceptions.</p>
         </div>
         <button onClick={() => navigate('/app/insights/policy-drift')} className="flex items-center gap-1 text-xs text-primary hover:text-primary-dark font-medium whitespace-nowrap transition-colors">
           View analysis <ArrowRight className="w-3 h-3" />
@@ -155,23 +155,23 @@ export default function Dashboard() {
       </div>
 
       {/* Recent Exceptions */}
-      <div className="bg-dark2 rounded-xl border border-white/10">
-        <div className="flex items-center justify-between p-6 border-b border-white/10">
-          <h2 className="text-sm font-semibold text-white">Recent Exceptions</h2>
+      <div className="bg-white rounded-xl border border-gray-200">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <h2 className="text-sm font-semibold text-gray-900">Recent Exceptions</h2>
           <button onClick={() => navigate('/app/my-requests')} className="text-xs text-primary hover:text-primary-dark font-medium transition-colors flex items-center gap-1">
             View all <ArrowRight className="w-3 h-3" />
           </button>
         </div>
-        <div className="divide-y divide-white/5">
+        <div className="divide-y divide-gray-100">
           {recentExceptions.map(ex => (
             <button
               key={ex.id}
               onClick={() => navigate(`/app/exceptions/${ex.id}/intake`)}
-              className="w-full flex items-center gap-4 p-4 hover:bg-white/3 transition-colors text-left"
+              className="w-full flex items-center gap-4 p-4 hover:bg-gray-50 transition-colors text-left"
             >
               <div className={`w-2 h-2 rounded-full shrink-0 ${priorityColors[ex.priority]}`} />
               <div className="flex-1 min-w-0">
-                <div className="text-sm text-white font-medium truncate">{ex.title}</div>
+                <div className="text-sm text-gray-900 font-medium truncate">{ex.title}</div>
                 <div className="text-xs text-gray-500 mt-0.5">{ex.id} · {ex.category} · {ex.time}</div>
               </div>
               <span className={`px-2 py-0.5 rounded-md text-xs font-medium shrink-0 ${statusMap[ex.status]?.class}`}>

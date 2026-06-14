@@ -26,33 +26,33 @@ export default function OrgSettings() {
     <div className="fade-in max-w-xl">
       <div className="flex items-center gap-3 mb-6">
         <Building2 className="w-6 h-6 text-primary" />
-        <h1 className="text-2xl font-bold text-white">Organization Settings</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Organization Settings</h1>
       </div>
 
       <form onSubmit={handleSave} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1.5">Organization Name</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1.5">Organization Name</label>
           <input type="text" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1.5">Organization Slug</label>
-          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2.5">
+          <label className="block text-sm font-medium text-gray-600 mb-1.5">Organization Slug</label>
+          <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5">
             <span className="text-gray-500 text-sm">app.exceptionos.io/</span>
             <input type="text" value={form.slug} onChange={e => setForm(p => ({ ...p, slug: e.target.value }))}
-              className="flex-1 bg-transparent text-sm text-white focus:outline-none" />
+              className="flex-1 bg-transparent text-sm text-gray-900 focus:outline-none" />
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1.5">Website</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1.5">Website</label>
           <input type="url" value={form.website} onChange={e => setForm(p => ({ ...p, website: e.target.value }))} placeholder="https://yourcompany.com"
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">Timezone</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1.5">Timezone</label>
             <select value={form.timezone} onChange={e => setForm(p => ({ ...p, timezone: e.target.value }))}
-              className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary/60 transition-all">
+              className="w-full appearance-none bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-primary/60 transition-all">
               <option value="America/New_York">Eastern (ET)</option>
               <option value="America/Chicago">Central (CT)</option>
               <option value="America/Denver">Mountain (MT)</option>
@@ -61,13 +61,13 @@ export default function OrgSettings() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">Data Retention (days)</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1.5">Data Retention (days)</label>
             <input type="number" value={form.retentionDays} onChange={e => setForm(p => ({ ...p, retentionDays: e.target.value }))}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary/60 transition-all" />
+              className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-primary/60 transition-all" />
           </div>
         </div>
         <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white font-medium text-sm transition-colors disabled:opacity-50">
-          {saving ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
+          {saving ? <div className="w-4 h-4 border-2 border-gray-300 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
           {saving ? 'Saving...' : 'Save Changes'}
         </button>
       </form>

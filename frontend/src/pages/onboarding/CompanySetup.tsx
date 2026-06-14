@@ -34,41 +34,41 @@ export default function CompanySetup() {
         <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
           <Building2 className="w-6 h-6 text-primary" />
         </div>
-        <h1 className="text-2xl font-bold text-white mb-2">Set up your organization</h1>
-        <p className="text-gray-400">Tell us about your company so we can configure ExceptionOS for you.</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Set up your organization</h1>
+        <p className="text-gray-500">Tell us about your company so we can configure ExceptionOS for you.</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1.5">Organization name</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1.5">Organization name</label>
           <input type="text" value={form.name} onChange={e => handleNameChange(e.target.value)} placeholder="Acme Corporation" required
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all" />
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all" />
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1.5">Unique slug (URL identifier)</label>
-          <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-lg px-3 py-2.5">
+          <label className="block text-sm font-medium text-gray-600 mb-1.5">Unique slug (URL identifier)</label>
+          <div className="flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5">
             <span className="text-gray-500 text-sm">app.exceptionos.io/</span>
             <input type="text" value={form.slug} onChange={e => setForm(p => ({ ...p, slug: e.target.value }))} placeholder="acme" required
-              className="flex-1 bg-transparent text-sm text-white placeholder-gray-500 focus:outline-none" />
+              className="flex-1 bg-transparent text-sm text-gray-900 placeholder-gray-500 focus:outline-none" />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1.5">Industry</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1.5">Industry</label>
           <select value={form.industry} onChange={e => setForm(p => ({ ...p, industry: e.target.value }))} required
-            className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all">
+            className="w-full appearance-none bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all">
             <option value="">Select industry</option>
-            {industries.map(i => <option key={i} value={i} className="bg-dark2">{i}</option>)}
+            {industries.map(i => <option key={i} value={i} className="bg-white">{i}</option>)}
           </select>
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1.5">Organization size</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1.5">Organization size</label>
           <div className="grid grid-cols-5 gap-2">
             {sizes.map(s => (
               <button key={s} type="button" onClick={() => setForm(p => ({ ...p, size: s }))}
-                className={`py-2 rounded-lg text-sm font-medium border transition-all ${form.size === s ? 'bg-primary/20 border-primary/50 text-primary' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'}`}>
+                className={`py-2 rounded-lg text-sm font-medium border transition-all ${form.size === s ? 'bg-primary/20 border-primary/50 text-primary' : 'bg-gray-50 border-gray-200 text-gray-500 hover:border-gray-300'}`}>
                 {s}
               </button>
             ))}
@@ -76,7 +76,7 @@ export default function CompanySetup() {
         </div>
 
         <button type="submit" disabled={loading} className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-semibold transition-colors disabled:opacity-50 mt-4">
-          {loading && <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />}
+          {loading && <div className="w-4 h-4 border-2 border-gray-300 border-t-white rounded-full animate-spin" />}
           {loading ? 'Saving...' : (<>Continue <ArrowRight className="w-4 h-4" /></>)}
         </button>
       </form>

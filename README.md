@@ -11,8 +11,8 @@ Every business exception — remembered, analyzed, and learned from. Forever.
 
 <br/>
 
-[![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-exceptionos--nexus--2026.web.app-5B5BF0?style=for-the-badge)](https://exceptionos-nexus-2026.web.app)
-[![API Docs](https://img.shields.io/badge/📡%20API%20Docs-FastAPI%20Swagger-009688?style=for-the-badge)](https://exceptionos-api-ardxmhsajkhfegiyzomr.run.app/docs)
+[![Live Demo](https://img.shields.io/badge/🚀%20Live%20Demo-exceptionos.web.app-5B5BF0?style=for-the-badge)](https://exceptionos.web.app)
+[![API Docs](https://img.shields.io/badge/📡%20API%20Docs-FastAPI%20Swagger-009688?style=for-the-badge)](https://exceptionos-backend-m477e5mida-el.a.run.app/docs)
 [![GitHub](https://img.shields.io/badge/GitHub-Avi36005%2FExceptionOS-181717?style=for-the-badge&logo=github)](https://github.com/Avi36005/ExceptionOS)
 
 <br/>
@@ -62,8 +62,8 @@ The result: **consistent, fair, explainable decisions** that get smarter over ti
 
 | Service | URL | Status |
 |---------|-----|--------|
-| **Frontend App** | [exceptionos-nexus-2026.web.app](https://exceptionos-nexus-2026.web.app) | ![Firebase](https://img.shields.io/badge/Firebase-Hosting-orange?style=flat-square&logo=firebase) |
-| **API (Cloud Run)** | [exceptionos-api.run.app/docs](https://exceptionos-api-ardxmhsajkhfegiyzomr.run.app/docs) | ![Cloud Run](https://img.shields.io/badge/Cloud%20Run-asia--south1-4285F4?style=flat-square) |
+| **Frontend App** | [exceptionos.web.app](https://exceptionos.web.app) | ![Firebase](https://img.shields.io/badge/Firebase-Hosting-orange?style=flat-square&logo=firebase) |
+| **API (Cloud Run)** | [exceptionos-api.run.app/docs](https://exceptionos-backend-m477e5mida-el.a.run.app/docs) | ![Cloud Run](https://img.shields.io/badge/Cloud%20Run-asia--south1-4285F4?style=flat-square) |
 | **Supabase DB** | [ardxmhsajkhfegiyzomr.supabase.co](https://ardxmhsajkhfegiyzomr.supabase.co) | ![Supabase](https://img.shields.io/badge/PostgreSQL-Active-3ECF8E?style=flat-square) |
 | **GitHub Repo** | [Avi36005/ExceptionOS](https://github.com/Avi36005/ExceptionOS) | ![GitHub](https://img.shields.io/badge/Branch-feat%2Fexceptionos--frontend-181717?style=flat-square) |
 
@@ -275,7 +275,7 @@ Every exception triggers a parallel multi-agent debate before any recommendation
 | **React** | 18 | UI framework |
 | **Vite** | 5 | Build tool |
 | **TypeScript** | 5 | Type safety |
-| **Tailwind CSS** | 3 | Styling (dark theme, `#5B5BF0` accent) |
+| **Tailwind CSS** | 3 | Styling (light theme: white canvas, purple-black sidebar, `#5B5BF0` accent) |
 | **React Router** | v6 | Client-side routing |
 | **Supabase JS** | 2 | Auth + real-time |
 | **Zustand** | 4 | State management |
@@ -304,8 +304,8 @@ Every exception triggers a parallel multi-agent debate before any recommendation
 | **Database** | Supabase PostgreSQL | Transactional state (18 tables, RLS) |
 | **Auth** | Supabase Auth | JWT, magic link, OAuth |
 | **Memory** | Hindsight Cloud (Vectorize) | Retain / Recall / Reflect |
-| **Backend API** | Google Cloud Run | `exceptionos-api` |
-| **Frontend** | Firebase Hosting | `exceptionos-nexus-2026` |
+| **Backend API** | Google Cloud Run | `exceptionos-backend` (asia-south1) |
+| **Frontend** | Firebase Hosting | `exceptionos` (exceptionos.web.app) |
 | **Secrets** | Google Secret Manager | All API keys |
 | **Voice** | ElevenLabs | Conversational voice assistant |
 | **Region** | `asia-south1` | Primary Cloud Run region |

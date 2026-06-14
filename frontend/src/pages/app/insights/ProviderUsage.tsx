@@ -16,8 +16,8 @@ export default function ProviderUsage() {
       <div className="flex items-center gap-3 mb-6">
         <Activity className="w-6 h-6 text-primary" />
         <div>
-          <h1 className="text-2xl font-bold text-white">AI Provider Usage</h1>
-          <p className="text-gray-400 text-sm mt-1">Usage analytics for AI features across the platform.</p>
+          <h1 className="text-2xl font-bold text-gray-900">AI Provider Usage</h1>
+          <p className="text-gray-500 text-sm mt-1">Usage analytics for AI features across the platform.</p>
         </div>
       </div>
 
@@ -27,19 +27,19 @@ export default function ProviderUsage() {
           { label: 'Avg Response Time', value: '1.2s', change: '-0.3s vs last month' },
           { label: 'AI Acceptance Rate', value: '84%', change: 'Users accepting AI recommendations' },
         ].map(s => (
-          <div key={s.label} className="bg-dark2 rounded-xl border border-white/10 p-5">
+          <div key={s.label} className="bg-white rounded-xl border border-gray-200 p-5">
             <div className="text-xs text-gray-500 mb-2">{s.label}</div>
-            <div className="text-2xl font-bold text-white mb-1">{s.value}</div>
+            <div className="text-2xl font-bold text-gray-900 mb-1">{s.value}</div>
             <div className="text-xs text-gray-500">{s.change}</div>
           </div>
         ))}
       </div>
 
-      <div className="bg-dark2 rounded-xl border border-white/10 p-6">
-        <h2 className="text-sm font-semibold text-white mb-4">AI Feature Usage Breakdown</h2>
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h2 className="text-sm font-semibold text-gray-900 mb-4">AI Feature Usage Breakdown</h2>
         <ResponsiveContainer width="100%" height={260}>
           <BarChart data={usageData} layout="vertical">
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.06)" />
             <XAxis type="number" tick={{ fill: '#6B7280', fontSize: 11 }} axisLine={false} tickLine={false} />
             <YAxis type="category" dataKey="name" tick={{ fill: '#9CA3AF', fontSize: 12 }} axisLine={false} tickLine={false} width={120} />
             <Tooltip contentStyle={{ backgroundColor: '#0C0F24', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, color: '#F4F5FA' }} />

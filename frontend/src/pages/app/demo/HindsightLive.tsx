@@ -28,8 +28,8 @@ export default function HindsightLive() {
   ]
 
   return (
-    <div className="min-h-screen bg-dark flex flex-col items-center justify-center p-6">
-      <button onClick={() => navigate('/demo')} className="absolute top-6 left-6 flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors">
+    <div className="min-h-screen bg-light flex flex-col items-center justify-center p-6">
+      <button onClick={() => navigate('/demo')} className="absolute top-6 left-6 flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors">
         <ArrowLeft className="w-4 h-4" /> Back
       </button>
       <div className="max-w-2xl w-full">
@@ -37,16 +37,16 @@ export default function HindsightLive() {
           <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
             <Brain className="w-8 h-8 text-primary" />
           </div>
-          <h1 className="text-2xl font-bold text-white mb-2">Hindsight™ Live Demo</h1>
-          <p className="text-gray-400">Query organizational memory in natural language. No account needed.</p>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Hindsight™ Live Demo</h1>
+          <p className="text-gray-500">Query organizational memory in natural language. No account needed.</p>
         </div>
 
-        <div className="bg-dark2 rounded-2xl border border-white/10 p-6 mb-4">
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-4">
           <div className="flex gap-2 mb-4">
             <input value={query} onChange={e => setQuery(e.target.value)}
               onKeyDown={e => e.key === 'Enter' && runQuery()}
               placeholder="Ask anything about past decisions..."
-              className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
+              className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
             <button onClick={runQuery} disabled={!query || loading}
               className="p-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white transition-colors disabled:opacity-50">
               <Send className="w-4 h-4" />
@@ -56,7 +56,7 @@ export default function HindsightLive() {
           {!query && (
             <div className="flex flex-wrap gap-2">
               {sampleQueries.map(q => (
-                <button key={q} onClick={() => setQuery(q)} className="text-xs text-gray-400 border border-white/10 rounded-lg px-3 py-1.5 hover:border-primary/30 hover:text-white transition-all bg-white/3">
+                <button key={q} onClick={() => setQuery(q)} className="text-xs text-gray-500 border border-gray-200 rounded-lg px-3 py-1.5 hover:border-primary/30 hover:text-gray-900 transition-all bg-gray-50">
                   {q}
                 </button>
               ))}
@@ -68,7 +68,7 @@ export default function HindsightLive() {
               <div className="flex gap-1">
                 {[0, 0.2, 0.4].map(d => <div key={d} className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: `${d}s` }} />)}
               </div>
-              <span className="text-sm text-gray-400">Querying organizational memory...</span>
+              <span className="text-sm text-gray-500">Querying organizational memory...</span>
             </div>
           )}
 
@@ -78,7 +78,7 @@ export default function HindsightLive() {
                 <Zap className="w-4 h-4 text-primary" />
                 <span className="text-xs font-semibold text-primary">Hindsight™ Response</span>
               </div>
-              <p className="text-sm text-gray-300 whitespace-pre-line leading-relaxed">{result}</p>
+              <p className="text-sm text-gray-600 whitespace-pre-line leading-relaxed">{result}</p>
             </div>
           )}
         </div>

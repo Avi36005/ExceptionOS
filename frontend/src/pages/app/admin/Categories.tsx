@@ -15,7 +15,7 @@ export default function Categories() {
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
           <Tag className="w-6 h-6 text-primary" />
-          <h1 className="text-2xl font-bold text-white">Exception Categories</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Exception Categories</h1>
         </div>
         <button className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors">
           <Plus className="w-4 h-4" /> Add Category
@@ -23,15 +23,15 @@ export default function Categories() {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {categories.map(c => (
-          <div key={c.id} className="bg-dark2 rounded-xl border border-white/10 p-5 hover:border-white/20 cursor-pointer transition-all">
+          <div key={c.id} className="bg-white rounded-xl border border-gray-200 p-5 hover:border-gray-300 cursor-pointer transition-all">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: c.color }} />
-              <h3 className="text-sm font-semibold text-white flex-1">{c.name}</h3>
-              <span className={`w-2 h-2 rounded-full ${c.active ? 'bg-green-400' : 'bg-gray-600'}`} />
+              <h3 className="text-sm font-semibold text-gray-900 flex-1">{c.name}</h3>
+              <span className={`w-2 h-2 rounded-full ${c.active ? 'bg-green-500' : 'bg-gray-300'}`} />
             </div>
             <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
-              <div><span className="text-white font-semibold text-sm">{c.exceptions}</span> exceptions</div>
-              <div><span className="text-white font-semibold text-sm">{c.policies}</span> policies</div>
+              <div><span className="text-gray-900 font-semibold text-sm">{c.exceptions}</span> exceptions</div>
+              <div><span className="text-gray-900 font-semibold text-sm">{c.policies}</span> policies</div>
             </div>
           </div>
         ))}

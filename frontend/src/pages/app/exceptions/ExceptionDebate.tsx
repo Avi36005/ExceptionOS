@@ -35,10 +35,10 @@ export default function ExceptionDebate() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Brain className="w-5 h-5 text-primary" />
-          <span className="text-sm font-semibold text-white">AI Adversarial Debate</span>
+          <span className="text-sm font-semibold text-gray-900">AI Adversarial Debate</span>
           <span className="text-xs text-gray-500">— Both sides of the decision analyzed</span>
         </div>
-        <button onClick={handleRegenerate} disabled={regenerating} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-300 text-xs font-medium border border-white/10 transition-colors disabled:opacity-50">
+        <button onClick={handleRegenerate} disabled={regenerating} className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 text-xs font-medium border border-gray-200 transition-colors disabled:opacity-50">
           <RefreshCw className={`w-3.5 h-3.5 ${regenerating ? 'animate-spin' : ''}`} />
           Regenerate
         </button>
@@ -46,42 +46,42 @@ export default function ExceptionDebate() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Pro */}
-        <div className="bg-dark2 rounded-xl border border-white/10 p-5">
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-8 h-8 rounded-lg bg-green-500/10 flex items-center justify-center">
-              <ThumbsUp className="w-4 h-4 text-green-400" />
+              <ThumbsUp className="w-4 h-4 text-green-600" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-white">Arguments For Approval</div>
+              <div className="text-sm font-semibold text-gray-900">Arguments For Approval</div>
               <div className="text-xs text-gray-500">{initialDebate.proArguments.length} points identified</div>
             </div>
           </div>
           <div className="space-y-3">
             {initialDebate.proArguments.map((arg, i) => (
               <div key={i} className={`border-l-2 pl-3 ${strengthColors[arg.strength]}`}>
-                <p className="text-xs text-gray-300 leading-relaxed">{arg.text}</p>
-                <span className={`text-xs font-medium mt-1 inline-block capitalize ${arg.strength === 'strong' ? 'text-primary' : 'text-yellow-400'}`}>{arg.strength} argument</span>
+                <p className="text-xs text-gray-600 leading-relaxed">{arg.text}</p>
+                <span className={`text-xs font-medium mt-1 inline-block capitalize ${arg.strength === 'strong' ? 'text-primary' : 'text-yellow-700'}`}>{arg.strength} argument</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Con */}
-        <div className="bg-dark2 rounded-xl border border-white/10 p-5">
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
-              <ThumbsDown className="w-4 h-4 text-red-400" />
+              <ThumbsDown className="w-4 h-4 text-red-600" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-white">Arguments Against Approval</div>
+              <div className="text-sm font-semibold text-gray-900">Arguments Against Approval</div>
               <div className="text-xs text-gray-500">{initialDebate.conArguments.length} points identified</div>
             </div>
           </div>
           <div className="space-y-3">
             {initialDebate.conArguments.map((arg, i) => (
               <div key={i} className={`border-l-2 pl-3 ${strengthColors[arg.strength]}`}>
-                <p className="text-xs text-gray-300 leading-relaxed">{arg.text}</p>
-                <span className={`text-xs font-medium mt-1 inline-block capitalize ${arg.strength === 'strong' ? 'text-red-400' : 'text-yellow-400'}`}>{arg.strength} argument</span>
+                <p className="text-xs text-gray-600 leading-relaxed">{arg.text}</p>
+                <span className={`text-xs font-medium mt-1 inline-block capitalize ${arg.strength === 'strong' ? 'text-red-700' : 'text-yellow-700'}`}>{arg.strength} argument</span>
               </div>
             ))}
           </div>
@@ -90,7 +90,7 @@ export default function ExceptionDebate() {
 
       <div className="bg-primary/5 border border-primary/20 rounded-xl p-5">
         <div className="text-xs font-semibold text-primary mb-2 uppercase tracking-wide">Debate Summary</div>
-        <p className="text-sm text-gray-300 leading-relaxed">
+        <p className="text-sm text-gray-600 leading-relaxed">
           The case for approval is strong on business impact and precedent grounds, but two procedural gaps exist: CISO sign-off and the systemic pattern of IT emergency exceptions in Q4.
           Approving with conditions (CISO review within 24h, 60-day license cap, mandatory procurement process review) is the recommended path.
         </p>

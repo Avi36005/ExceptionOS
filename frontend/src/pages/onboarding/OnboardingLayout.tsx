@@ -14,16 +14,16 @@ export default function OnboardingLayout() {
   const currentStep = steps.findIndex(s => location.pathname.includes(s.path))
 
   return (
-    <div className="min-h-screen bg-dark">
+    <div className="min-h-screen bg-light">
       {/* Header */}
-      <div className="border-b border-white/10 px-6 py-4 flex items-center justify-between">
+      <div className="border-b border-gray-200 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <Zap className="w-4 h-4 text-white" />
           </div>
-          <span className="font-bold text-white">ExceptionOS</span>
+          <span className="font-bold text-gray-900">ExceptionOS</span>
         </div>
-        <button onClick={() => navigate('/select-organization')} className="text-sm text-gray-400 hover:text-white transition-colors">
+        <button onClick={() => navigate('/select-organization')} className="text-sm text-gray-500 hover:text-gray-900 transition-colors">
           Skip setup
         </button>
       </div>
@@ -36,17 +36,17 @@ export default function OnboardingLayout() {
               <div className="flex flex-col items-center">
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all ${
                   i < currentStep ? 'bg-primary text-white' :
-                  i === currentStep ? 'bg-primary text-white ring-2 ring-primary/30 ring-offset-2 ring-offset-dark' :
-                  'bg-white/10 text-gray-500'
+                  i === currentStep ? 'bg-primary text-white ring-2 ring-primary/30 ring-offset-2 ring-offset-light' :
+                  'bg-gray-100 text-gray-500'
                 }`}>
                   {i < currentStep ? <Check className="w-4 h-4" /> : i + 1}
                 </div>
-                <span className={`text-xs mt-1 font-medium ${i <= currentStep ? 'text-white' : 'text-gray-600'}`}>
+                <span className={`text-xs mt-1 font-medium ${i <= currentStep ? 'text-gray-900' : 'text-gray-600'}`}>
                   {step.label}
                 </span>
               </div>
               {i < steps.length - 1 && (
-                <div className={`h-0.5 flex-1 mx-3 mb-5 ${i < currentStep ? 'bg-primary' : 'bg-white/10'}`} style={{ width: 80 }} />
+                <div className={`h-0.5 flex-1 mx-3 mb-5 ${i < currentStep ? 'bg-primary' : 'bg-gray-100'}`} style={{ width: 80 }} />
               )}
             </div>
           ))}

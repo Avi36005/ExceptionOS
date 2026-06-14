@@ -26,7 +26,7 @@ export default function Profile() {
     <div className="fade-in max-w-xl">
       <div className="flex items-center gap-3 mb-6">
         <User className="w-6 h-6 text-primary" />
-        <h1 className="text-2xl font-bold text-white">Profile Settings</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Profile Settings</h1>
       </div>
 
       {/* Avatar */}
@@ -40,7 +40,7 @@ export default function Profile() {
           </button>
         </div>
         <div>
-          <div className="text-sm font-semibold text-white">{form.fullName || 'User'}</div>
+          <div className="text-sm font-semibold text-gray-900">{form.fullName || 'User'}</div>
           <div className="text-xs text-gray-500">{form.email}</div>
           <button className="text-xs text-primary hover:text-primary-dark transition-colors mt-1">Change avatar</button>
         </div>
@@ -49,35 +49,35 @@ export default function Profile() {
       <form onSubmit={handleSave} className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">Full Name</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1.5">Full Name</label>
             <input type="text" value={form.fullName} onChange={e => setForm(p => ({ ...p, fullName: e.target.value }))}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
+              className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">Email</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1.5">Email</label>
             <input type="email" value={form.email} disabled
-              className="w-full bg-white/3 border border-white/5 rounded-lg px-3 py-2.5 text-sm text-gray-500 cursor-not-allowed" />
+              className="w-full bg-gray-50 border border-gray-100 rounded-lg px-3 py-2.5 text-sm text-gray-500 cursor-not-allowed" />
           </div>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">Job Title</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1.5">Job Title</label>
             <input type="text" value={form.jobTitle} onChange={e => setForm(p => ({ ...p, jobTitle: e.target.value }))}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
+              className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">Department</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1.5">Department</label>
             <input type="text" value={form.department} onChange={e => setForm(p => ({ ...p, department: e.target.value }))}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
+              className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
           </div>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1.5">Phone</label>
+          <label className="block text-sm font-medium text-gray-600 mb-1.5">Phone</label>
           <input type="tel" value={form.phone} onChange={e => setForm(p => ({ ...p, phone: e.target.value }))}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
         </div>
         <button type="submit" disabled={saving} className="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary hover:bg-primary-dark text-white font-medium text-sm transition-colors disabled:opacity-50">
-          {saving ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
+          {saving ? <div className="w-4 h-4 border-2 border-gray-300 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
           {saving ? 'Saving...' : 'Save Changes'}
         </button>
       </form>

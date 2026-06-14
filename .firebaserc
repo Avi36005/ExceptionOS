@@ -6,7 +6,7 @@
     "mediflow-nexus-2026": {
       "hosting": {
         "exceptionos": [
-          "exceptionos-nexus-2026"
+          "exceptionos"
         ]
       }
     }

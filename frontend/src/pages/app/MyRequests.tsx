@@ -14,9 +14,9 @@ const mockRequests = [
 ]
 
 const priorityColor: Record<string, string> = {
-  high: 'text-red-400',
-  medium: 'text-yellow-400',
-  low: 'text-green-400',
+  high: 'text-red-600',
+  medium: 'text-yellow-600',
+  low: 'text-green-600',
 }
 
 export default function MyRequests() {
@@ -32,8 +32,8 @@ export default function MyRequests() {
     <div className="fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">My Requests</h1>
-          <p className="text-sm text-gray-400 mt-1">{mockRequests.length} total exceptions submitted</p>
+          <h1 className="text-2xl font-bold text-gray-900">My Requests</h1>
+          <p className="text-sm text-gray-500 mt-1">{mockRequests.length} total exceptions submitted</p>
         </div>
         <button onClick={() => navigate('/app/exceptions/new')}
           className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-dark text-white font-medium text-sm transition-colors">
@@ -46,10 +46,10 @@ export default function MyRequests() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search your requests..."
-            className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
         </div>
         <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-          className="bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-primary/60 transition-all">
+          className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 focus:outline-none focus:border-primary/60 transition-all">
           <option value="all">All Statuses</option>
           <option value="draft">Draft</option>
           <option value="submitted">Submitted</option>
@@ -58,7 +58,7 @@ export default function MyRequests() {
           <option value="rejected">Rejected</option>
           <option value="closed">Closed</option>
         </select>
-        <button className="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-colors">
+        <button className="p-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-500 hover:text-gray-900 transition-colors">
           <Filter className="w-4 h-4" />
         </button>
       </div>
@@ -71,29 +71,29 @@ export default function MyRequests() {
           </button>
         } />
       ) : (
-        <div className="bg-dark2 rounded-xl border border-white/10 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-white/10">
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">ID</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Title</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Category</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Priority</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Approver</th>
-                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Submitted</th>
+              <tr className="border-b border-gray-200">
+                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Title</th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Priority</th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Approver</th>
+                <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Submitted</th>
               </tr>
             </thead>
             <tbody>
               {filtered.map(r => (
-                <tr key={r.id} className="border-b border-white/5 hover:bg-white/3 cursor-pointer transition-colors"
+                <tr key={r.id} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
                   onClick={() => navigate(`/app/exceptions/${r.id}/intake`)}>
                   <td className="py-3 px-4 text-primary font-mono text-xs">{r.id}</td>
-                  <td className="py-3 px-4 text-white font-medium max-w-xs truncate">{r.title}</td>
-                  <td className="py-3 px-4 text-gray-400">{r.category}</td>
+                  <td className="py-3 px-4 text-gray-900 font-medium max-w-xs truncate">{r.title}</td>
+                  <td className="py-3 px-4 text-gray-500">{r.category}</td>
                   <td className={`py-3 px-4 text-xs font-medium capitalize ${priorityColor[r.priority]}`}>{r.priority}</td>
                   <td className="py-3 px-4"><StatusBadge status={r.status} /></td>
-                  <td className="py-3 px-4 text-gray-400">{r.approver}</td>
+                  <td className="py-3 px-4 text-gray-500">{r.approver}</td>
                   <td className="py-3 px-4 text-gray-500 text-xs">{r.created}</td>
                 </tr>
               ))}

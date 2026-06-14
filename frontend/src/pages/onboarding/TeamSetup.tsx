@@ -32,8 +32,8 @@ export default function TeamSetup() {
         <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
           <Users className="w-6 h-6 text-primary" />
         </div>
-        <h1 className="text-2xl font-bold text-white mb-2">Invite your team</h1>
-        <p className="text-gray-400">Add team members who will submit, approve, or manage exceptions.</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Invite your team</h1>
+        <p className="text-gray-500">Add team members who will submit, approve, or manage exceptions.</p>
       </div>
 
       <div className="space-y-2 mb-4">
@@ -42,14 +42,14 @@ export default function TeamSetup() {
             <div className="relative flex-1">
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
               <input type="email" value={invite.email} onChange={e => updateRow(i, 'email', e.target.value)} placeholder="colleague@company.com"
-                className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all" />
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all" />
             </div>
             <select value={invite.role} onChange={e => updateRow(i, 'role', e.target.value)}
-              className="bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary/60 transition-all">
-              {roles.map(r => <option key={r} value={r} className="bg-dark2 capitalize">{r}</option>)}
+              className="bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-primary/60 transition-all">
+              {roles.map(r => <option key={r} value={r} className="bg-white capitalize">{r}</option>)}
             </select>
             {invites.length > 1 && (
-              <button onClick={() => removeRow(i)} className="p-2.5 rounded-lg bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white transition-colors">
+              <button onClick={() => removeRow(i)} className="p-2.5 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-colors">
                 <X className="w-4 h-4" />
               </button>
             )}
@@ -62,11 +62,11 @@ export default function TeamSetup() {
       </button>
 
       <div className="flex gap-3">
-        <button onClick={() => navigate('/onboarding/hindsight')} className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-sm border border-white/10 transition-colors">
+        <button onClick={() => navigate('/onboarding/hindsight')} className="px-6 py-3 rounded-xl bg-gray-100 hover:bg-gray-100 text-gray-900 font-medium text-sm border border-gray-200 transition-colors">
           Skip for now
         </button>
         <button onClick={handleSubmit} disabled={loading} className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-semibold transition-colors disabled:opacity-50">
-          {loading && <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />}
+          {loading && <div className="w-4 h-4 border-2 border-gray-300 border-t-white rounded-full animate-spin" />}
           {loading ? 'Sending...' : (<>Send invitations <ArrowRight className="w-4 h-4" /></>)}
         </button>
       </div>

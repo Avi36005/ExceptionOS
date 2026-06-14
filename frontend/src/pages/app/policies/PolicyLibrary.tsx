@@ -13,9 +13,9 @@ const policies = [
 ]
 
 const driftColors: Record<string, string> = {
-  high: 'bg-red-500/20 text-red-400',
-  medium: 'bg-yellow-500/20 text-yellow-400',
-  low: 'bg-green-500/20 text-green-400',
+  high: 'bg-red-50 text-red-700 ring-1 ring-red-600/20',
+  medium: 'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20',
+  low: 'bg-green-50 text-green-700 ring-1 ring-green-600/20',
 }
 
 export default function PolicyLibrary() {
@@ -32,11 +32,11 @@ export default function PolicyLibrary() {
     <div className="fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-white">Policy Library</h1>
-          <p className="text-sm text-gray-400 mt-1">{policies.length} active policies</p>
+          <h1 className="text-2xl font-bold text-gray-900">Policy Library</h1>
+          <p className="text-sm text-gray-500 mt-1">{policies.length} active policies</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => navigate('/app/policies/simulator')} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 hover:bg-white/15 text-white text-sm font-medium border border-white/10 transition-colors">
+          <button onClick={() => navigate('/app/policies/simulator')} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-100 hover:bg-gray-100 text-gray-900 text-sm font-medium border border-gray-200 transition-colors">
             <TrendingUp className="w-4 h-4" /> Simulator
           </button>
           <button onClick={() => navigate('/app/policies/new')} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors">
@@ -49,50 +49,50 @@ export default function PolicyLibrary() {
         <div className="relative flex-1 max-w-sm">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Search policies..."
-            className="w-full bg-white/5 border border-white/10 rounded-lg pl-9 pr-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
+            className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
         </div>
         <div className="flex gap-1">
           {categories.map(c => (
             <button key={c} onClick={() => setCategoryFilter(c)}
-              className={`px-3 py-2 rounded-lg text-xs font-medium capitalize transition-all ${categoryFilter === c ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-white/5 text-gray-400 hover:text-white border border-white/10'}`}>
+              className={`px-3 py-2 rounded-lg text-xs font-medium capitalize transition-all ${categoryFilter === c ? 'bg-primary/20 text-primary border border-primary/30' : 'bg-gray-50 text-gray-500 hover:text-gray-900 border border-gray-200'}`}>
               {c === 'all' ? 'All' : c}
             </button>
           ))}
         </div>
-        <button className="p-2 rounded-lg bg-white/5 border border-white/10 text-gray-400 hover:text-white transition-colors">
+        <button className="p-2 rounded-lg bg-gray-50 border border-gray-200 text-gray-500 hover:text-gray-900 transition-colors">
           <Filter className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="bg-dark2 rounded-xl border border-white/10 overflow-hidden">
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <table className="w-full text-sm">
           <thead>
-            <tr className="border-b border-white/10">
-              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">ID</th>
-              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Policy</th>
-              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Category</th>
-              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Version</th>
-              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Status</th>
-              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Exceptions</th>
-              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Drift</th>
-              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-400 uppercase tracking-wider">Updated</th>
+            <tr className="border-b border-gray-200">
+              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">ID</th>
+              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Policy</th>
+              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Category</th>
+              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Version</th>
+              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Exceptions</th>
+              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Drift</th>
+              <th className="text-left py-3 px-4 text-xs font-semibold text-gray-500 uppercase tracking-wider">Updated</th>
             </tr>
           </thead>
           <tbody>
             {filtered.map(p => (
-              <tr key={p.id} className="border-b border-white/5 hover:bg-white/3 cursor-pointer transition-colors"
+              <tr key={p.id} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer transition-colors"
                 onClick={() => navigate(`/app/policies/${p.id}`)}>
                 <td className="py-3 px-4 text-primary font-mono text-xs">{p.id}</td>
                 <td className="py-3 px-4">
                   <div className="flex items-center gap-2">
                     <BookOpen className="w-4 h-4 text-gray-600 shrink-0" />
-                    <span className="text-white font-medium">{p.title}</span>
+                    <span className="text-gray-900 font-medium">{p.title}</span>
                   </div>
                 </td>
-                <td className="py-3 px-4 text-gray-400">{p.category}</td>
+                <td className="py-3 px-4 text-gray-500">{p.category}</td>
                 <td className="py-3 px-4 text-gray-500 font-mono text-xs">v{p.version}</td>
                 <td className="py-3 px-4"><StatusBadge status={p.status} /></td>
-                <td className="py-3 px-4 text-gray-300">{p.exceptions}</td>
+                <td className="py-3 px-4 text-gray-600">{p.exceptions}</td>
                 <td className="py-3 px-4"><span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${driftColors[p.drift]}`}>{p.drift}</span></td>
                 <td className="py-3 px-4 text-gray-500 text-xs">{p.lastUpdated}</td>
               </tr>

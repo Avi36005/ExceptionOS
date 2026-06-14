@@ -20,22 +20,22 @@ export default function PolicyEdit() {
     <div className="fade-in max-w-3xl">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <button onClick={() => navigate(`/app/policies/${policyId}`)} className="p-2 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white transition-colors">
+          <button onClick={() => navigate(`/app/policies/${policyId}`)} className="p-2 rounded-lg hover:bg-gray-50 text-gray-500 hover:text-gray-900 transition-colors">
             <ArrowLeft className="w-4 h-4" />
           </button>
           <div>
-            <h1 className="text-xl font-bold text-white">Edit Policy</h1>
-            <p className="text-sm text-gray-400">{policyId} · Creating v2.4</p>
+            <h1 className="text-xl font-bold text-gray-900">Edit Policy</h1>
+            <p className="text-sm text-gray-500">{policyId} · Creating v2.4</p>
           </div>
         </div>
         <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-dark text-white text-sm font-medium transition-colors disabled:opacity-50">
-          {saving ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
+          {saving ? <div className="w-4 h-4 border-2 border-gray-300 border-t-white rounded-full animate-spin" /> : <Save className="w-4 h-4" />}
           {saving ? 'Saving...' : 'Save Version'}
         </button>
       </div>
 
-      <div className="bg-dark2 rounded-xl border border-white/10 overflow-hidden">
-        <div className="px-4 py-3 border-b border-white/10 flex items-center gap-2">
+      <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="px-4 py-3 border-b border-gray-200 flex items-center gap-2">
           <span className="text-xs font-mono text-gray-500">Markdown</span>
           <span className="w-1 h-1 bg-gray-600 rounded-full" />
           <span className="text-xs text-gray-600">Changes will create a new version</span>
@@ -43,13 +43,13 @@ export default function PolicyEdit() {
         <textarea
           value={content}
           onChange={e => setContent(e.target.value)}
-          className="w-full bg-transparent px-6 py-4 text-sm text-gray-200 font-mono focus:outline-none resize-none leading-relaxed"
+          className="w-full bg-transparent px-6 py-4 text-sm text-gray-900 font-mono focus:outline-none resize-none leading-relaxed"
           rows={30}
         />
       </div>
 
       <div className="mt-4 p-4 bg-yellow-500/5 border border-yellow-500/20 rounded-xl">
-        <p className="text-xs text-yellow-400">Changes will be saved as a new version (v2.4). The previous version (v2.3) will remain accessible in version history. All open exceptions will continue to reference v2.3.</p>
+        <p className="text-xs text-yellow-700">Changes will be saved as a new version (v2.4). The previous version (v2.3) will remain accessible in version history. All open exceptions will continue to reference v2.3.</p>
       </div>
     </div>
   )

@@ -30,19 +30,19 @@ export default function PoliciesSetup() {
         <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
           <BookOpen className="w-6 h-6 text-primary" />
         </div>
-        <h1 className="text-2xl font-bold text-white mb-2">Import policy templates</h1>
-        <p className="text-gray-400">Start with curated policy templates for your industry. You can customize everything later.</p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">Import policy templates</h1>
+        <p className="text-gray-500">Start with curated policy templates for your industry. You can customize everything later.</p>
       </div>
 
       <div className="space-y-3 mb-6">
         {templates.map(t => (
           <button key={t.id} onClick={() => toggle(t.id)}
-            className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all text-left ${selected.includes(t.id) ? 'bg-primary/10 border-primary/40' : 'bg-white/5 border-white/10 hover:border-white/20'}`}>
-            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${selected.includes(t.id) ? 'bg-primary' : 'bg-white/10'}`}>
-              {selected.includes(t.id) ? <Check className="w-4 h-4 text-white" /> : <BookOpen className="w-4 h-4 text-gray-400" />}
+            className={`w-full flex items-center gap-4 p-4 rounded-xl border transition-all text-left ${selected.includes(t.id) ? 'bg-primary/10 border-primary/40' : 'bg-gray-50 border-gray-200 hover:border-gray-300'}`}>
+            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${selected.includes(t.id) ? 'bg-primary' : 'bg-gray-100'}`}>
+              {selected.includes(t.id) ? <Check className="w-4 h-4 text-white" /> : <BookOpen className="w-4 h-4 text-gray-500" />}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-sm font-medium text-white">{t.name}</div>
+              <div className="text-sm font-medium text-gray-900">{t.name}</div>
               <div className="text-xs text-gray-500 mt-0.5">{t.desc}</div>
             </div>
             <span className="text-xs text-gray-500 shrink-0">{t.count} policies</span>
@@ -53,7 +53,7 @@ export default function PoliciesSetup() {
       <p className="text-xs text-gray-500 mb-6">{selected.length} template sets selected · {selected.reduce((a, id) => a + (templates.find(t => t.id === id)?.count ?? 0), 0)} policies will be imported</p>
 
       <button onClick={handleSubmit} disabled={loading} className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-semibold transition-colors disabled:opacity-50">
-        {loading && <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />}
+        {loading && <div className="w-4 h-4 border-2 border-gray-300 border-t-white rounded-full animate-spin" />}
         {loading ? 'Importing...' : (<>Continue <ArrowRight className="w-4 h-4" /></>)}
       </button>
     </div>

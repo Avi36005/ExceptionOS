@@ -31,19 +31,19 @@ const policyMatches = [
 ]
 
 const complianceConfig = {
-  violated: { label: 'Policy Violated', icon: AlertTriangle, class: 'text-red-400 bg-red-500/10 border-red-500/20' },
-  compliant: { label: 'Compliant', icon: CheckCircle, class: 'text-green-400 bg-green-500/10 border-green-500/20' },
-  partial: { label: 'Partial Compliance', icon: Shield, class: 'text-yellow-400 bg-yellow-500/10 border-yellow-500/20' },
+  violated: { label: 'Policy Violated', icon: AlertTriangle, class: 'text-red-700 bg-red-50 border-red-600/20' },
+  compliant: { label: 'Compliant', icon: CheckCircle, class: 'text-green-700 bg-green-50 border-green-600/20' },
+  partial: { label: 'Partial Compliance', icon: Shield, class: 'text-yellow-700 bg-yellow-50 border-yellow-600/20' },
 }
 
 export default function ExceptionPolicy() {
   return (
     <div className="fade-in space-y-4">
       <div className="flex items-center gap-3 p-4 bg-red-500/5 border border-red-500/20 rounded-xl">
-        <AlertTriangle className="w-5 h-5 text-red-400 shrink-0" />
+        <AlertTriangle className="w-5 h-5 text-red-600 shrink-0" />
         <div>
-          <div className="text-sm font-semibold text-white">Primary Policy Violation Detected</div>
-          <div className="text-xs text-gray-400 mt-0.5">This exception request violates 1 active policy and partially conflicts with 1 other. Review below.</div>
+          <div className="text-sm font-semibold text-gray-900">Primary Policy Violation Detected</div>
+          <div className="text-xs text-gray-500 mt-0.5">This exception request violates 1 active policy and partially conflicts with 1 other. Review below.</div>
         </div>
       </div>
 
@@ -51,7 +51,7 @@ export default function ExceptionPolicy() {
         const cfg = complianceConfig[p.compliance as keyof typeof complianceConfig]
         const Icon = cfg.icon
         return (
-          <div key={p.id} className="bg-dark2 rounded-xl border border-white/10 p-5">
+          <div key={p.id} className="bg-white rounded-xl border border-gray-200 p-5">
             <div className="flex items-start justify-between gap-4 mb-3">
               <div>
                 <div className="flex items-center gap-2 mb-1">
@@ -59,14 +59,14 @@ export default function ExceptionPolicy() {
                   <span className="text-xs text-gray-500">v{p.version} · Section {p.section}</span>
                   <span className="text-xs text-gray-600">· {p.relevance}% relevant</span>
                 </div>
-                <h3 className="text-sm font-semibold text-white">{p.title}</h3>
+                <h3 className="text-sm font-semibold text-gray-900">{p.title}</h3>
               </div>
               <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-xs font-medium shrink-0 ${cfg.class}`}>
                 <Icon className="w-3.5 h-3.5" />
                 {cfg.label}
               </div>
             </div>
-            <p className="text-sm text-gray-300 leading-relaxed mb-3">{p.summary}</p>
+            <p className="text-sm text-gray-600 leading-relaxed mb-3">{p.summary}</p>
             <button className="flex items-center gap-1 text-xs text-primary hover:text-primary-dark font-medium transition-colors">
               View full policy <ExternalLink className="w-3 h-3" />
             </button>

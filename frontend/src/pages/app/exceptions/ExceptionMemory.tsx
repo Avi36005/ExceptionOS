@@ -18,15 +18,15 @@ export default function ExceptionMemory() {
       <div className="flex items-center gap-3 p-4 bg-primary/5 border border-primary/20 rounded-xl">
         <Brain className="w-5 h-5 text-primary shrink-0" />
         <div>
-          <div className="text-sm font-semibold text-white">Memory Committed</div>
-          <div className="text-xs text-gray-400 mt-0.5">This exception has been added to the organizational memory. It will inform future similar decisions.</div>
+          <div className="text-sm font-semibold text-gray-900">Memory Committed</div>
+          <div className="text-xs text-gray-500 mt-0.5">This exception has been added to the organizational memory. It will inform future similar decisions.</div>
         </div>
       </div>
 
-      <div className="bg-dark2 rounded-xl border border-white/10 p-6">
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
         <div className="flex items-center gap-2 mb-4">
           <Tag className="w-4 h-4 text-gray-500" />
-          <h3 className="text-sm font-semibold text-white">Memory Tags</h3>
+          <h3 className="text-sm font-semibold text-gray-900">Memory Tags</h3>
         </div>
         <div className="flex flex-wrap gap-2">
           {tags.map(tag => (
@@ -38,21 +38,21 @@ export default function ExceptionMemory() {
         <p className="text-xs text-gray-500 mt-3">AI automatically extracted these tags from the exception content, policy matches, and decision rationale.</p>
       </div>
 
-      <div className="bg-dark2 rounded-xl border border-white/10 p-6">
-        <h3 className="text-sm font-semibold text-white mb-4">Memory Insights Generated</h3>
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h3 className="text-sm font-semibold text-gray-900 mb-4">Memory Insights Generated</h3>
         <div className="space-y-4">
           {memoryInsights.map(insight => (
             <div key={insight.label} className="border-l-2 border-primary/30 pl-4">
               <div className="text-xs font-semibold text-primary mb-1">{insight.label}</div>
-              <p className="text-sm text-gray-300">{insight.value}</p>
+              <p className="text-sm text-gray-600">{insight.value}</p>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="bg-dark2 rounded-xl border border-white/10 p-6">
-        <h3 className="text-sm font-semibold text-white mb-3">Memory Availability</h3>
-        <p className="text-sm text-gray-300 mb-4">
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h3 className="text-sm font-semibold text-gray-900 mb-3">Memory Availability</h3>
+        <p className="text-sm text-gray-600 mb-4">
           This exception is now searchable in your precedent library and will be surfaced when similar requests are submitted.
           All personal information has been handled per your organization's data retention policy.
         </p>

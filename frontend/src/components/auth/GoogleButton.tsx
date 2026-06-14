@@ -28,7 +28,7 @@ export default function GoogleButton({ label = 'Continue with Google' }: { label
       type="button"
       onClick={handleClick}
       disabled={loading}
-      className="w-full py-2.5 rounded-lg bg-white hover:bg-gray-100 text-gray-800 font-medium text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2.5"
+      className="w-full py-2.5 rounded-lg bg-white hover:bg-gray-50 text-gray-700 font-medium text-sm border border-gray-300 shadow-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2.5"
     >
       {loading ? (
         <div className="w-4 h-4 border-2 border-gray-300 border-t-gray-600 rounded-full animate-spin" />

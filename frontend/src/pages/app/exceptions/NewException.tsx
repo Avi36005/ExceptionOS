@@ -52,19 +52,19 @@ export default function NewException() {
   return (
     <div className="fade-in max-w-2xl">
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate(-1)} className="p-2 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white transition-colors">
+        <button onClick={() => navigate(-1)} className="p-2 rounded-lg hover:bg-gray-50 text-gray-500 hover:text-gray-900 transition-colors">
           <ArrowLeft className="w-4 h-4" />
         </button>
         <div>
-          <h1 className="text-xl font-bold text-white">New Exception Request</h1>
-          <p className="text-sm text-gray-400">Step {step} of 2</p>
+          <h1 className="text-xl font-bold text-gray-900">New Exception Request</h1>
+          <p className="text-sm text-gray-500">Step {step} of 2</p>
         </div>
       </div>
 
       {/* Progress */}
       <div className="flex gap-2 mb-8">
         {[1, 2].map(s => (
-          <div key={s} className={`h-1 flex-1 rounded-full transition-all ${s <= step ? 'bg-primary' : 'bg-white/10'}`} />
+          <div key={s} className={`h-1 flex-1 rounded-full transition-all ${s <= step ? 'bg-primary' : 'bg-gray-100'}`} />
         ))}
       </div>
 
@@ -74,14 +74,14 @@ export default function NewException() {
             <div className="flex items-start gap-3">
               <Sparkles className="w-5 h-5 text-primary shrink-0 mt-0.5" />
               <div className="flex-1">
-                <div className="text-sm font-medium text-white mb-2">Start with AI assist</div>
+                <div className="text-sm font-medium text-gray-900 mb-2">Start with AI assist</div>
                 <textarea value={form.description} onChange={e => update('description', e.target.value)}
                   placeholder="Describe your exception request in plain language. AI will help structure the rest of the form..."
                   rows={3}
-                  className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all resize-none mb-3" />
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all resize-none mb-3" />
                 <button onClick={handleAiSuggest} disabled={aiLoading}
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-dark text-white font-medium text-sm transition-colors disabled:opacity-50">
-                  {aiLoading ? <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" /> : <Sparkles className="w-3 h-3" />}
+                  {aiLoading ? <div className="w-3 h-3 border-2 border-gray-300 border-t-white rounded-full animate-spin" /> : <Sparkles className="w-3 h-3" />}
                   {aiLoading ? 'Analyzing...' : 'Auto-fill with AI'}
                 </button>
               </div>
@@ -89,26 +89,26 @@ export default function NewException() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">Exception Title *</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1.5">Exception Title *</label>
             <input type="text" value={form.title} onChange={e => update('title', e.target.value)} placeholder="Concise description of what you're requesting an exception for"
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all" />
+              className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Category *</label>
+              <label className="block text-sm font-medium text-gray-600 mb-1.5">Category *</label>
               <select value={form.category} onChange={e => update('category', e.target.value)}
-                className="w-full appearance-none bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary/60 transition-all">
+                className="w-full appearance-none bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-primary/60 transition-all">
                 <option value="">Select category</option>
-                {categories.map(c => <option key={c} value={c} className="bg-dark2">{c}</option>)}
+                {categories.map(c => <option key={c} value={c} className="bg-white">{c}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Priority</label>
+              <label className="block text-sm font-medium text-gray-600 mb-1.5">Priority</label>
               <div className="grid grid-cols-4 gap-1">
                 {priorities.map(p => (
                   <button key={p} type="button" onClick={() => update('priority', p)}
-                    className={`py-2 rounded-lg text-xs font-medium capitalize border transition-all ${form.priority === p ? 'bg-primary/20 border-primary/50 text-primary' : 'bg-white/5 border-white/10 text-gray-400 hover:border-white/20'}`}>
+                    className={`py-2 rounded-lg text-xs font-medium capitalize border transition-all ${form.priority === p ? 'bg-primary/20 border-primary/50 text-primary' : 'bg-gray-50 border-gray-200 text-gray-500 hover:border-gray-300'}`}>
                     {p}
                   </button>
                 ))}
@@ -118,14 +118,14 @@ export default function NewException() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Department</label>
+              <label className="block text-sm font-medium text-gray-600 mb-1.5">Department</label>
               <input type="text" value={form.department} onChange={e => update('department', e.target.value)} placeholder="e.g. Engineering"
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Requested By</label>
+              <label className="block text-sm font-medium text-gray-600 mb-1.5">Requested By</label>
               <input type="text" value={form.requestedBy} onChange={e => update('requestedBy', e.target.value)} placeholder="Your name"
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
             </div>
           </div>
 
@@ -139,47 +139,47 @@ export default function NewException() {
       {step === 2 && (
         <div className="space-y-5 fade-in">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1.5">Business Justification *</label>
+            <label className="block text-sm font-medium text-gray-600 mb-1.5">Business Justification *</label>
             <textarea value={form.businessJustification} onChange={e => update('businessJustification', e.target.value)}
               placeholder="Why is this exception necessary? What business impact would occur without it?"
               rows={5}
-              className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all resize-none" />
+              className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 focus:ring-1 focus:ring-primary/30 transition-all resize-none" />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Financial Amount (if applicable)</label>
+              <label className="block text-sm font-medium text-gray-600 mb-1.5">Financial Amount (if applicable)</label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-sm">$</span>
                 <input type="number" value={form.amount} onChange={e => update('amount', e.target.value)} placeholder="0.00"
-                  className="w-full bg-white/5 border border-white/10 rounded-lg pl-7 pr-3 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
+                  className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-7 pr-3 py-2.5 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:border-primary/60 transition-all" />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Decision Needed By</label>
+              <label className="block text-sm font-medium text-gray-600 mb-1.5">Decision Needed By</label>
               <input type="date" value={form.deadline} onChange={e => update('deadline', e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-primary/60 transition-all" />
+                className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:border-primary/60 transition-all" />
             </div>
           </div>
 
-          <div className="p-4 bg-white/5 border border-white/10 rounded-xl">
+          <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl">
             <div className="flex items-center gap-2 mb-3">
               <FileText className="w-4 h-4 text-primary" />
-              <span className="text-sm font-medium text-white">Attach Evidence</span>
+              <span className="text-sm font-medium text-gray-900">Attach Evidence</span>
             </div>
-            <div className="border-2 border-dashed border-white/10 rounded-lg p-6 text-center hover:border-primary/30 transition-colors cursor-pointer">
-              <p className="text-sm text-gray-400">Drop files here or click to upload</p>
+            <div className="border-2 border-dashed border-gray-200 rounded-lg p-6 text-center hover:border-primary/30 transition-colors cursor-pointer">
+              <p className="text-sm text-gray-500">Drop files here or click to upload</p>
               <p className="text-xs text-gray-600 mt-1">PDF, DOC, XLS, PNG up to 10MB each</p>
             </div>
           </div>
 
           <div className="flex gap-3">
-            <button onClick={() => setStep(1)} className="px-6 py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-sm border border-white/10 transition-colors">
+            <button onClick={() => setStep(1)} className="px-6 py-3 rounded-xl bg-gray-100 hover:bg-gray-100 text-gray-900 font-medium text-sm border border-gray-200 transition-colors">
               Back
             </button>
             <button onClick={handleSubmit} disabled={loading || !form.businessJustification}
               className="flex-1 flex items-center justify-center gap-2 py-3 rounded-xl bg-primary hover:bg-primary-dark text-white font-semibold transition-colors disabled:opacity-50">
-              {loading && <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />}
+              {loading && <div className="w-4 h-4 border-2 border-gray-300 border-t-white rounded-full animate-spin" />}
               {loading ? 'Submitting...' : 'Submit Exception'}
             </button>
           </div>

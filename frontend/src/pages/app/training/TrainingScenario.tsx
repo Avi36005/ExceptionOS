@@ -60,11 +60,11 @@ export default function TrainingScenario() {
         <div className="w-20 h-20 rounded-3xl bg-primary/10 flex items-center justify-center mx-auto mb-6">
           <CheckCircle className="w-10 h-10 text-primary" />
         </div>
-        <h2 className="text-2xl font-bold text-white mb-2">Scenario Complete!</h2>
-        <p className="text-gray-400 mb-2">You scored <span className="text-white font-semibold">{score}/{scenario.steps.length}</span></p>
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">Scenario Complete!</h2>
+        <p className="text-gray-500 mb-2">You scored <span className="text-gray-900 font-semibold">{score}/{scenario.steps.length}</span></p>
         <p className="text-sm text-gray-500 mb-8">{score === scenario.steps.length ? 'Perfect score! Excellent decision-making.' : 'Good effort. Review the feedback for areas to improve.'}</p>
         <div className="flex gap-3 justify-center">
-          <button onClick={() => navigate('/app/training')} className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium text-sm border border-white/10 transition-colors">
+          <button onClick={() => navigate('/app/training')} className="px-6 py-2.5 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-900 font-medium text-sm border border-gray-200 transition-colors">
             Back to Library
           </button>
           <button onClick={() => { setStep(0); setSelected(null); setShowFeedback(false); setScore(0); setDone(false) }} className="px-6 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white font-medium text-sm transition-colors">
@@ -78,35 +78,35 @@ export default function TrainingScenario() {
   return (
     <div className="fade-in max-w-2xl">
       <div className="flex items-center gap-3 mb-6">
-        <button onClick={() => navigate('/app/training')} className="p-2 rounded-lg hover:bg-white/5 text-gray-400 hover:text-white transition-colors">
+        <button onClick={() => navigate('/app/training')} className="p-2 rounded-lg hover:bg-gray-50 text-gray-500 hover:text-gray-900 transition-colors">
           <ArrowLeft className="w-4 h-4" />
         </button>
         <div className="flex-1">
-          <h1 className="text-lg font-bold text-white">{scenario.title}</h1>
+          <h1 className="text-lg font-bold text-gray-900">{scenario.title}</h1>
           <p className="text-xs text-primary font-mono mb-1">{scenarioId || 'training-scenario'}</p>
-          <p className="text-sm text-gray-400">Step {step + 1} of {scenario.steps.length}</p>
+          <p className="text-sm text-gray-500">Step {step + 1} of {scenario.steps.length}</p>
         </div>
       </div>
 
       <div className="flex gap-1 mb-6">
         {scenario.steps.map((_, i) => (
-          <div key={i} className={`h-1 flex-1 rounded-full ${i < step ? 'bg-primary' : i === step ? 'bg-primary/60' : 'bg-white/10'}`} />
+          <div key={i} className={`h-1 flex-1 rounded-full ${i < step ? 'bg-primary' : i === step ? 'bg-primary/60' : 'bg-gray-100'}`} />
         ))}
       </div>
 
-      <div className="bg-dark2 rounded-2xl border border-white/10 p-6 mb-4">
-        <p className="text-sm font-medium text-white leading-relaxed">{current.question}</p>
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-4">
+        <p className="text-sm font-medium text-gray-900 leading-relaxed">{current.question}</p>
       </div>
 
       <div className="space-y-3 mb-6">
         {current.options.map((opt, i) => (
           <button key={i} onClick={() => handleSelect(i)}
             className={`w-full text-left p-4 rounded-xl border text-sm transition-all ${
-              !showFeedback ? 'bg-white/5 border-white/10 hover:border-primary/40 text-gray-300' :
-              i === selected && opt.correct ? 'bg-green-500/10 border-green-500/30 text-green-300' :
-              i === selected && !opt.correct ? 'bg-red-500/10 border-red-500/30 text-red-300' :
-              opt.correct ? 'bg-green-500/5 border-green-500/20 text-gray-400' :
-              'bg-white/3 border-white/5 text-gray-500'
+              !showFeedback ? 'bg-gray-50 border-gray-200 hover:border-primary/40 text-gray-600' :
+              i === selected && opt.correct ? 'bg-green-50 border-green-600/30 text-green-700' :
+              i === selected && !opt.correct ? 'bg-red-50 border-red-600/30 text-red-700' :
+              opt.correct ? 'bg-green-50/60 border-green-600/20 text-gray-600' :
+              'bg-gray-50 border-gray-100 text-gray-500'
             }`}>
             <div className="flex items-start gap-3">
               <span className="w-5 h-5 rounded-full border border-current flex items-center justify-center text-xs shrink-0 mt-0.5">
@@ -119,14 +119,14 @@ export default function TrainingScenario() {
       </div>
 
       {showFeedback && selected !== null && (
-        <div className={`p-4 rounded-xl border mb-4 fade-in ${current.options[selected].correct ? 'bg-green-500/10 border-green-500/20' : 'bg-red-500/10 border-red-500/20'}`}>
+        <div className={`p-4 rounded-xl border mb-4 fade-in ${current.options[selected].correct ? 'bg-green-50 border-green-600/20' : 'bg-red-50 border-red-600/20'}`}>
           <div className="flex items-center gap-2 mb-1">
-            {current.options[selected].correct ? <CheckCircle className="w-4 h-4 text-green-400" /> : <XCircle className="w-4 h-4 text-red-400" />}
-            <span className={`text-sm font-semibold ${current.options[selected].correct ? 'text-green-400' : 'text-red-400'}`}>
+            {current.options[selected].correct ? <CheckCircle className="w-4 h-4 text-green-700" /> : <XCircle className="w-4 h-4 text-red-700" />}
+            <span className={`text-sm font-semibold ${current.options[selected].correct ? 'text-green-700' : 'text-red-700'}`}>
               {current.options[selected].correct ? 'Correct!' : 'Not quite right'}
             </span>
           </div>
-          <p className="text-sm text-gray-300">{current.options[selected].feedback}</p>
+          <p className="text-sm text-gray-600">{current.options[selected].feedback}</p>
         </div>
       )}
 

@@ -15,24 +15,24 @@ export default function MemoryHealth() {
       <div className="flex items-center gap-3 mb-6">
         <Brain className="w-6 h-6 text-primary" />
         <div>
-          <h1 className="text-2xl font-bold text-white">Memory Health</h1>
-          <p className="text-gray-400 text-sm mt-1">Status of your organization's institutional memory.</p>
+          <h1 className="text-2xl font-bold text-gray-900">Memory Health</h1>
+          <p className="text-gray-500 text-sm mt-1">Status of your organization's institutional memory.</p>
         </div>
       </div>
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {healthMetrics.map(m => (
-          <div key={m.label} className="bg-dark2 rounded-xl border border-white/10 p-4">
+          <div key={m.label} className="bg-white rounded-xl border border-gray-200 p-4">
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs text-gray-500 font-medium">{m.label}</span>
-              {m.status === 'good' ? <CheckCircle className="w-4 h-4 text-green-400" /> : <AlertTriangle className="w-4 h-4 text-yellow-400" />}
+              {m.status === 'good' ? <CheckCircle className="w-4 h-4 text-green-600" /> : <AlertTriangle className="w-4 h-4 text-yellow-600" />}
             </div>
-            <div className={`text-xl font-bold mb-0.5 ${m.status === 'good' ? 'text-white' : 'text-yellow-400'}`}>{m.value}</div>
+            <div className={`text-xl font-bold mb-0.5 ${m.status === 'good' ? 'text-gray-900' : 'text-yellow-700'}`}>{m.value}</div>
             <div className="text-xs text-gray-500">{m.desc}</div>
           </div>
         ))}
       </div>
-      <div className="bg-dark2 rounded-xl border border-white/10 p-6">
-        <h2 className="text-sm font-semibold text-white mb-4">Memory Gaps — Categories Needing More Precedents</h2>
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h2 className="text-sm font-semibold text-gray-900 mb-4">Memory Gaps — Categories Needing More Precedents</h2>
         <div className="space-y-3">
           {[
             { category: 'Operations', precedents: 3, needed: 10 },
@@ -41,10 +41,10 @@ export default function MemoryHealth() {
           ].map(g => (
             <div key={g.category}>
               <div className="flex items-center justify-between text-sm mb-1">
-                <span className="text-gray-300">{g.category}</span>
+                <span className="text-gray-600">{g.category}</span>
                 <span className="text-gray-500">{g.precedents}/{g.needed}</span>
               </div>
-              <div className="bg-white/10 rounded-full h-1.5">
+              <div className="bg-gray-100 rounded-full h-1.5">
                 <div className="h-1.5 rounded-full bg-yellow-500/70" style={{ width: `${(g.precedents / g.needed) * 100}%` }} />
               </div>
             </div>
