@@ -1,6 +1,7 @@
 import { Outlet, useNavigate, useParams, NavLink } from 'react-router-dom'
 import { ArrowLeft, FileText, Shield, Search, MessageSquare, Brain, Gavel, BarChart2, ClipboardList, Archive, Clock, CheckCircle, AlertTriangle } from 'lucide-react'
 import StatusBadge from '../../../components/ui/StatusBadge'
+import { getCase } from '../../../lib/demoData'
 
 const tabs = [
   { id: 'intake', label: 'Intake', icon: FileText },
@@ -15,22 +16,19 @@ const tabs = [
   { id: 'memory', label: 'Memory', icon: Archive },
 ]
 
-const mockException = {
-  id: 'EXC-1048',
+const fallback = {
   title: 'Emergency software license for design team',
-  status: 'under_review' as const,
-  category: 'IT & Security',
-  priority: 'high',
-  submitter: 'Alex Turner',
-  submittedAt: '2024-12-18',
-  deadline: '2024-12-20',
-  amount: '$4,500',
-  department: 'Product Design',
+  status: 'under_review' as const, category: 'IT & Security', priority: 'high' as const,
+  submitter: 'Alex Turner', created: '2024-12-18', deadline: '2024-12-20', amount: '$4,500', customer: 'Internal',
 }
 
 export default function ExceptionDetail() {
   const { caseId } = useParams()
   const navigate = useNavigate()
+  const c = getCase(caseId)
+  const mockException = c
+    ? { ...c, submittedAt: c.created, department: c.customer }
+    : { ...fallback, submittedAt: fallback.created, department: fallback.customer }
 
   return (
     <div className="fade-in">

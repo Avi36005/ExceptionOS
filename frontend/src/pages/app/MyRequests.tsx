@@ -3,21 +3,9 @@ import { useNavigate } from 'react-router-dom'
 import { Plus, Search, Filter, FileText } from 'lucide-react'
 import StatusBadge from '../../components/ui/StatusBadge'
 import EmptyState from '../../components/ui/EmptyState'
+import { DEMO_CASES, priorityText as priorityColor } from '../../lib/demoData'
 
-const mockRequests = [
-  { id: 'EXC-1048', title: 'Emergency software license for design team', category: 'IT', status: 'under_review' as const, created: '2024-12-18', priority: 'high', approver: 'Sarah Chen' },
-  { id: 'EXC-1044', title: 'Vendor NDA waiver for pilot program', category: 'Legal', status: 'approved' as const, created: '2024-12-17', priority: 'medium', approver: 'Marcus Williams' },
-  { id: 'EXC-1040', title: 'Remote work equipment reimbursement', category: 'HR', status: 'submitted' as const, created: '2024-12-16', priority: 'low', approver: 'Jane Doe' },
-  { id: 'EXC-1035', title: 'Sole-source vendor for Q1 project', category: 'Vendor', status: 'rejected' as const, created: '2024-12-14', priority: 'high', approver: 'Sarah Chen' },
-  { id: 'EXC-1030', title: 'Extended contractor agreement', category: 'HR', status: 'approved' as const, created: '2024-12-10', priority: 'medium', approver: 'Marcus Williams' },
-  { id: 'EXC-1020', title: 'Budget carryover from Q3', category: 'Finance', status: 'closed' as const, created: '2024-12-01', priority: 'low', approver: 'Jane Doe' },
-]
-
-const priorityColor: Record<string, string> = {
-  high: 'text-red-600',
-  medium: 'text-yellow-600',
-  low: 'text-green-600',
-}
+const mockRequests = DEMO_CASES
 
 export default function MyRequests() {
   const navigate = useNavigate()

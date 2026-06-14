@@ -2,15 +2,9 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Inbox as InboxIcon, Bell, CheckCircle, Clock, AlertTriangle, Filter, Search } from 'lucide-react'
 import EmptyState from '../../components/ui/EmptyState'
+import { demoNotifications } from '../../lib/demoData'
 
-const mockNotifications = [
-  { id: 1, type: 'approval_needed', title: 'Exception requires your approval', body: 'EXC-1048: Emergency software license for design team is pending your decision.', time: '2 hours ago', unread: true, exceptionId: 'EXC-1048' },
-  { id: 2, type: 'approved', title: 'Your exception was approved', body: 'EXC-1045: Budget transfer between Q4 projects was approved by Marcus Williams.', time: '4 hours ago', unread: true, exceptionId: 'EXC-1045' },
-  { id: 3, type: 'escalated', title: 'Exception escalated to you', body: 'EXC-1042: Contractor rate above policy maximum has been escalated for your review.', time: '6 hours ago', unread: false, exceptionId: 'EXC-1042' },
-  { id: 4, type: 'comment', title: 'New comment on your exception', body: 'Sarah Chen commented on EXC-1040: "I need additional documentation before I can approve this."', time: '1 day ago', unread: false, exceptionId: 'EXC-1040' },
-  { id: 5, type: 'rejected', title: 'Exception rejected', body: 'EXC-1038: Vendor NDA waiver was rejected. See the decision rationale for details.', time: '2 days ago', unread: false, exceptionId: 'EXC-1038' },
-  { id: 6, type: 'sla', title: 'SLA Warning', body: 'EXC-1035 is approaching its deadline. Decision required within 4 hours.', time: '2 days ago', unread: false, exceptionId: 'EXC-1035' },
-]
+const mockNotifications = demoNotifications()
 
 const typeConfig = {
   approval_needed: { icon: Clock, color: 'text-yellow-600', bg: 'bg-yellow-500/10' },

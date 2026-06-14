@@ -3,24 +3,17 @@ import { useNavigate } from 'react-router-dom'
 import { CheckSquare, Search, Clock, AlertTriangle } from 'lucide-react'
 import StatusBadge from '../../components/ui/StatusBadge'
 import EmptyState from '../../components/ui/EmptyState'
+import { pendingCases, decidedCases, priorityPill as priorityColor } from '../../lib/demoData'
 
-const pending = [
-  { id: 'EXC-1048', title: 'Emergency software license for design team', category: 'IT', submitter: 'Alex Turner', submitted: '2024-12-18', deadline: '2024-12-20', priority: 'high', amount: '$4,500' },
-  { id: 'EXC-1046', title: 'Remote work equipment reimbursement', category: 'HR', submitter: 'Priya Patel', submitted: '2024-12-17', deadline: '2024-12-21', priority: 'medium', amount: '$800' },
-  { id: 'EXC-1043', title: 'Sole-source vendor selection - office supplies', category: 'Vendor', submitter: 'James Lee', submitted: '2024-12-16', deadline: '2024-12-22', priority: 'low', amount: '$12,000' },
-]
+const pending = pendingCases().map(c => ({
+  id: c.id, title: c.title, category: c.category, submitter: c.submitter,
+  submitted: c.created, deadline: c.deadline, priority: c.priority, amount: c.amount,
+}))
 
-const history = [
-  { id: 'EXC-1040', title: 'Q4 budget reallocation request', category: 'Finance', submitter: 'Sarah Kim', decided: '2024-12-15', status: 'approved' as const },
-  { id: 'EXC-1038', title: 'Off-cycle pay adjustment', category: 'HR', submitter: 'Tom Chen', decided: '2024-12-14', status: 'rejected' as const },
-  { id: 'EXC-1035', title: 'Vendor rate exception', category: 'Vendor', submitter: 'Lisa Wong', decided: '2024-12-10', status: 'approved' as const },
-]
-
-const priorityColor: Record<string, string> = {
-  high: 'bg-red-50 text-red-700 ring-1 ring-red-600/20',
-  medium: 'bg-yellow-50 text-yellow-700 ring-1 ring-yellow-600/20',
-  low: 'bg-green-50 text-green-700 ring-1 ring-green-600/20',
-}
+const history = decidedCases().map(c => ({
+  id: c.id, title: c.title, category: c.category, submitter: c.submitter,
+  decided: c.created, status: c.status,
+}))
 
 export default function MyApprovals() {
   const navigate = useNavigate()
