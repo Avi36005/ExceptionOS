@@ -4,6 +4,7 @@ import { useAuthStore } from '../../store/authStore'
 import { useOrgStore } from '../../store/orgStore'
 
 const mockOrgs = [
+  { id: '0', name: 'NovaFlow Systems', slug: 'novaflow', plan: 'enterprise', role: 'admin', memberCount: 64 },
   { id: '1', name: 'Acme Corporation', slug: 'acme', plan: 'enterprise', role: 'admin', memberCount: 42 },
   { id: '2', name: 'TechStartup Inc.', slug: 'techstartup', plan: 'growth', role: 'manager', memberCount: 12 },
   { id: '3', name: 'Global Finance Inc.', slug: 'global-finance', plan: 'enterprise', role: 'reviewer', memberCount: 128 },
