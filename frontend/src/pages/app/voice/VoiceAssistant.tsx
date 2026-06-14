@@ -1,20 +1,58 @@
-import { useState } from 'react'
-import { Mic, MicOff, Volume2, Brain } from 'lucide-react'
+import { useState, useRef, useEffect } from 'react'
+import { Mic, MicOff, Volume2, Square, Brain, Loader2 } from 'lucide-react'
+import toast from 'react-hot-toast'
+import { speakWithElevenLabs, stopSpeech } from '../../../lib/voice'
+
+const RESPONSE =
+  'Exception EXC-1048 is currently Under Review. It was submitted by Alex Turner for an emergency software license and is assigned to Sarah Chen for approval. The deadline is in two days. Based on Hindsight, three similar license exceptions were approved this quarter. Would you like me to open it?'
 
 export default function VoiceAssistant() {
   const [listening, setListening] = useState(false)
   const [transcript, setTranscript] = useState('')
+  const [speaking, setSpeaking] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const recognitionRef = useRef<any>(null)
+
+  // Real browser speech-to-text (Web Speech API) for the query.
+  useEffect(() => {
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition
+    if (!SR) return
+    const rec = new SR()
+    rec.continuous = false
+    rec.interimResults = false
+    rec.lang = 'en-US'
+    rec.onresult = (e: any) => setTranscript(e.results[0][0].transcript)
+    rec.onend = () => setListening(false)
+    rec.onerror = () => setListening(false)
+    recognitionRef.current = rec
+    return () => { try { rec.stop() } catch { /* noop */ } }
+  }, [])
 
   const toggleListen = () => {
-    setListening(l => {
-      if (!l) {
-        setTimeout(() => {
-          setTranscript('Show me the status of exception EXC-1048')
-        }, 1500)
-      }
-      return !l
-    })
+    const rec = recognitionRef.current
+    if (!rec) {
+      toast.error('Speech recognition not supported in this browser — try Chrome')
+      return
+    }
+    if (listening) { rec.stop(); setListening(false) }
+    else { setTranscript(''); rec.start(); setListening(true) }
   }
+
+  // Real ElevenLabs playback of the assistant response.
+  const speakResponse = async () => {
+    if (speaking || loading) { stopSpeech(); setSpeaking(false); setLoading(false); return }
+    setLoading(true)
+    try {
+      await speakWithElevenLabs(RESPONSE, { onended: () => setSpeaking(false) })
+      setSpeaking(true)
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : 'Voice failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => () => stopSpeech(), [])
 
   return (
     <div className="fade-in max-w-2xl mx-auto">
@@ -23,11 +61,10 @@ export default function VoiceAssistant() {
           <Brain className="w-6 h-6 text-primary" />
           <h1 className="text-2xl font-bold text-gray-900">Voice Assistant</h1>
         </div>
-        <p className="text-gray-500 text-sm">Query ExceptionOS hands-free. Ask about exceptions, policies, and decisions.</p>
+        <p className="text-gray-500 text-sm">Query ExceptionOS hands-free. Powered by real ElevenLabs voice.</p>
       </div>
 
       <div className="flex flex-col items-center gap-8">
-        {/* Voice button */}
         <div className="relative">
           {listening && (
             <>
@@ -38,9 +75,7 @@ export default function VoiceAssistant() {
           <button
             onClick={toggleListen}
             className={`relative w-32 h-32 rounded-full flex items-center justify-center transition-all shadow-2xl ${
-              listening
-                ? 'bg-primary hover:bg-primary-dark shadow-primary/30'
-                : 'bg-gray-100 hover:bg-gray-100 border border-gray-300'
+              listening ? 'bg-primary hover:bg-primary-dark shadow-primary/30' : 'bg-gray-100 hover:bg-gray-200 border border-gray-300'
             }`}
           >
             {listening ? <MicOff className="w-12 h-12 text-white" /> : <Mic className="w-12 h-12 text-gray-900" />}
@@ -52,26 +87,29 @@ export default function VoiceAssistant() {
           <p className="text-xs text-gray-500">{listening ? 'Speak your query clearly' : 'Ask about any exception, policy, or precedent'}</p>
         </div>
 
-        {/* Transcript */}
         {transcript && (
-          <div className="w-full bg-white rounded-xl border border-gray-200 p-4 fade-in">
+          <div className="w-full bg-white rounded-xl border border-gray-200 p-4 fade-in shadow-card">
             <div className="text-xs text-gray-500 mb-2">You said:</div>
             <p className="text-sm text-gray-900 font-medium mb-4">"{transcript}"</p>
             <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <Brain className="w-4 h-4 text-primary" />
-                <span className="text-xs font-semibold text-primary">Response</span>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <Brain className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-semibold text-primary">Response</span>
+                </div>
+                <button
+                  onClick={speakResponse}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-xs font-medium transition-colors"
+                >
+                  {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : speaking ? <Square className="w-3.5 h-3.5" /> : <Volume2 className="w-3.5 h-3.5" />}
+                  {loading ? 'Preparing' : speaking ? 'Stop' : 'Speak'}
+                </button>
               </div>
-              <p className="text-sm text-gray-600">Exception EXC-1048 is currently <strong className="text-gray-900">Under Review</strong>. It was submitted by Alex Turner on December 18, 2024 for an emergency software license. The exception is assigned to Sarah Chen for approval. Deadline is December 20, 2024. Would you like me to open it?</p>
-              <div className="flex gap-2 mt-3">
-                <button className="px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-xs font-medium transition-colors">Open EXC-1048</button>
-                <button className="px-3 py-1.5 rounded-lg bg-gray-50 hover:bg-gray-100 text-gray-600 text-xs font-medium transition-colors">Dismiss</button>
-              </div>
+              <p className="text-sm text-gray-600">{RESPONSE}</p>
             </div>
           </div>
         )}
 
-        {/* Sample commands */}
         {!transcript && (
           <div className="w-full">
             <p className="text-xs text-gray-500 text-center mb-3">Try saying:</p>

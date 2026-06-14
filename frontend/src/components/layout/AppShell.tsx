@@ -2,6 +2,7 @@ import { Outlet } from 'react-router-dom'
 import { useState } from 'react'
 import Sidebar from './Sidebar'
 import TopBar from './TopBar'
+import VoiceOrb from '../voice/VoiceOrb'
 
 export default function AppShell() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
@@ -17,6 +18,7 @@ export default function AppShell() {
           </div>
         </main>
       </div>
+      <VoiceOrb />
     </div>
   )
 }
