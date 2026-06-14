@@ -16,6 +16,20 @@ export async function signUpWithEmail(email: string, password: string, fullName:
   return data
 }
 
+export async function signInWithGoogle() {
+  // OAuth login AND signup are the same flow: Supabase auto-provisions the
+  // user on first Google sign-in, so one button serves new and returning users.
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${window.location.origin}/auth/callback`,
+      queryParams: { access_type: 'offline', prompt: 'consent' },
+    },
+  })
+  if (error) throw error
+  return data
+}
+
 export async function signOut() {
   const { error } = await supabase.auth.signOut()
   if (error) throw error

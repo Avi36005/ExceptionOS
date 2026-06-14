@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Zap, Mail, Lock, User, Eye, EyeOff } from 'lucide-react'
 import { signUpWithEmail } from '../../lib/auth'
+import GoogleButton from '../../components/auth/GoogleButton'
 import toast from 'react-hot-toast'
 
 export default function SignupPage() {
@@ -123,6 +124,14 @@ export default function SignupPage() {
               {loading ? 'Creating account...' : 'Create account'}
             </button>
           </form>
+
+          <div className="flex items-center gap-3 my-5">
+            <div className="flex-1 h-px bg-white/10" />
+            <span className="text-xs text-gray-500">or</span>
+            <div className="flex-1 h-px bg-white/10" />
+          </div>
+
+          <GoogleButton label="Sign up with Google" />
 
           <div className="mt-6 pt-6 border-t border-white/10 text-center">
             <p className="text-sm text-gray-400">
