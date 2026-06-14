@@ -92,6 +92,7 @@ def create_app() -> FastAPI:
     from app.api.v1.routes.voice import router as voice_router
     from app.api.v1.routes.insights import router as insights_router
     from app.api.v1.routes.admin import router as admin_router
+    from app.api.v1.routes.notifications import router as notifications_router
     from app.api.v1.routes.integrations.openclaw import router as openclaw_router
 
     prefix = "/api/v1"
@@ -111,6 +112,7 @@ def create_app() -> FastAPI:
     app.include_router(voice_router, prefix=prefix)
     app.include_router(insights_router, prefix=prefix)
     app.include_router(admin_router, prefix=prefix)
+    app.include_router(notifications_router, prefix=prefix)
     app.include_router(openclaw_router, prefix=prefix)
 
     # Root

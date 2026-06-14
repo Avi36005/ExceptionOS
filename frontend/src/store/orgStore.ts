@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { createJSONStorage, persist } from 'zustand/middleware'
 
 export interface Organization {
   id: string
@@ -29,22 +30,35 @@ interface OrgState {
   isManager: () => boolean
 }
 
-export const useOrgStore = create<OrgState>((set, get) => ({
-  currentOrg: null,
-  memberships: [],
-  userRole: null,
+export const useOrgStore = create<OrgState>()(
+  persist(
+    (set, get) => ({
+      currentOrg: null,
+      memberships: [],
+      userRole: null,
 
-  setCurrentOrg: (org) => set({ currentOrg: org }),
-  setMemberships: (memberships) => set({ memberships }),
-  setUserRole: (role) => set({ userRole: role }),
+      setCurrentOrg: (org) => set({ currentOrg: org }),
+      setMemberships: (memberships) => set({ memberships }),
+      setUserRole: (role) => set({ userRole: role }),
 
-  isAdmin: () => {
-    const role = get().userRole
-    return role === 'owner' || role === 'admin'
-  },
+      isAdmin: () => {
+        const role = get().userRole
+        return role === 'owner' || role === 'admin'
+      },
 
-  isManager: () => {
-    const role = get().userRole
-    return role === 'owner' || role === 'admin' || role === 'manager'
-  },
-}))
+      isManager: () => {
+        const role = get().userRole
+        return role === 'owner' || role === 'admin' || role === 'manager'
+      },
+    }),
+    {
+      name: 'exceptionos-org-store',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        currentOrg: state.currentOrg,
+        memberships: state.memberships,
+        userRole: state.userRole,
+      }),
+    }
+  )
+)

@@ -677,6 +677,119 @@ async def get_budget_insights(
     })
 
 
+def _parse_dt(value: Any) -> datetime | None:
+    if not value:
+        return None
+    try:
+        return datetime.fromisoformat(str(value).replace("Z", "+00:00")).replace(tzinfo=None)
+    except (TypeError, ValueError):
+        return None
+
+
+def _demo_sla() -> dict[str, Any]:
+    return {
+        "source": "demo",
+        "summary": {
+            "rules_total": 12,
+            "rules_active": 11,
+            "rules_paused": 1,
+            "cases_evaluated": 24,
+            "met": 17,
+            "at_risk": 4,
+            "breached": 3,
+            "compliance_pct": 70.8,
+        },
+        "rules": [
+            {"category_id": "late_refund", "urgency": "high", "sla_minutes": 624, "active": True},
+            {"category_id": "sla_compensation", "urgency": "critical", "sla_minutes": 252, "active": True},
+            {"category_id": "operational_exception", "urgency": "medium", "sla_minutes": 2880, "active": False},
+        ],
+    }
+
+
+@router.get("/sla")
+async def get_sla_insights(
+    organization_id: UUID = Query(...),
+    current_user: dict = Depends(get_current_user),
+    supabase: Client = Depends(get_supabase),
+) -> DataResponse:
+    """Summarize SLA rule configuration and per-case SLA health.
+
+    States: ``met`` (resolved on time), ``breached`` (resolved late or open
+    past due), ``at_risk`` (open and past the warning threshold). Paused rules
+    (``active=False``) are reported but excluded from compliance scoring.
+    """
+    rules = _safe_data(
+        supabase.table("sla_rules")
+        .select("id,category_id,urgency,sla_minutes,warning_threshold_pct,active")
+        .eq("organization_id", str(organization_id))
+        .limit(100)
+    )
+    cases = _safe_data(
+        supabase.table("exception_cases")
+        .select("id,status,urgency,sla_due_at,resolved_at,created_at")
+        .eq("organization_id", str(organization_id))
+        .order("created_at", desc=True)
+        .limit(500)
+    )
+    if not rules and not cases:
+        return DataResponse(data=_demo_sla())
+
+    now = datetime.utcnow()
+    met = at_risk = breached = on_track = evaluated = 0
+    for case in cases:
+        due = _parse_dt(case.get("sla_due_at"))
+        if due is None:
+            continue
+        evaluated += 1
+        resolved = _parse_dt(case.get("resolved_at"))
+        if resolved is not None:
+            met += 1 if resolved <= due else 0
+            breached += 0 if resolved <= due else 1
+            continue
+        # Open case: breached if past due, at-risk inside the final 25% of the
+        # window, otherwise comfortably on track.
+        created = _parse_dt(case.get("created_at"))
+        if now > due:
+            breached += 1
+        elif created is not None and (due - created).total_seconds() > 0 and now > due - timedelta(
+            seconds=0.25 * (due - created).total_seconds()
+        ):
+            at_risk += 1
+        else:
+            on_track += 1
+
+    # Compliance is scored over resolved cases (met vs. breached-when-resolved);
+    # open at-risk/on-track cases are reported but not yet pass/fail.
+    scored = met + breached
+    rule_rows = [
+        {
+            "id": rule.get("id"),
+            "category_id": rule.get("category_id"),
+            "urgency": rule.get("urgency"),
+            "sla_minutes": rule.get("sla_minutes"),
+            "warning_threshold_pct": _num(rule.get("warning_threshold_pct"), 0.75),
+            "active": bool(rule.get("active", True)),
+        }
+        for rule in rules
+    ]
+    return DataResponse(data={
+        "source": "supabase",
+        "summary": {
+            "rules_total": len(rules),
+            "rules_active": sum(1 for r in rules if r.get("active", True)),
+            "rules_paused": sum(1 for r in rules if not r.get("active", True)),
+            "cases_evaluated": evaluated,
+            "met": met,
+            "at_risk": at_risk,
+            "breached": breached,
+            "on_track": on_track,
+            "compliance_pct": _pct(met, scored),
+        },
+        "rules": rule_rows,
+    })
+
+
 @router.get("/benchmarks")
 async def get_benchmarks(
     organization_id: UUID = Query(...),

@@ -288,7 +288,148 @@ def _generate_company(
         )
         cases_for_company.append(case_rows)
 
+    _generate_sla_rules(add, company, org_id, category_ids)
+    _generate_budgets(add, company, org_id, dept_ids, category_ids, cases_for_company, now)
     _generate_learning_artifacts(add, company, org_id, policies, cases_for_company, now)
+
+
+# Representative urgency tier per category, used to derive a single canonical
+# SLA rule per category. The "paused" state is demonstrated by deactivating the
+# operational-exception rule so the dashboard has at least one paused SLA.
+SLA_URGENCY_BY_CATEGORY = {
+    "late_refund": "high",
+    "enterprise_discount": "medium",
+    "service_credit": "medium",
+    "setup_fee_waiver": "low",
+    "contract_cancellation": "high",
+    "implementation_failure": "high",
+    "unsupported_feature": "medium",
+    "sla_compensation": "critical",
+    "vendor_payment": "medium",
+    "expense_exception": "low",
+    "procurement_exception": "medium",
+    "operational_exception": "medium",
+}
+
+SLA_MULTIPLIER = {"low": 1.5, "medium": 1.0, "high": 0.65, "critical": 0.35}
+
+
+def _generate_sla_rules(
+    add: Any, company: CompanyTemplate, org_id: str, category_ids: dict[str, str]
+) -> None:
+    """One canonical SLA rule per category. ``operational_exception`` is left
+    paused (``active=False``) so every org exposes a paused-SLA state."""
+    for index, (code, category_id) in enumerate(sorted(category_ids.items())):
+        urgency = SLA_URGENCY_BY_CATEGORY.get(code, "medium")
+        base = next((c["default_sla_minutes"] for c in EXCEPTION_CATEGORY_DEFS if c["code"] == code), 2880)
+        add(
+            "sla_rules",
+            {
+                "id": deterministic_id_str(company.slug, "sla_rule", code),
+                "organization_id": org_id,
+                "category_id": category_id,
+                "urgency": urgency,
+                "sla_minutes": int(base * SLA_MULTIPLIER[urgency]),
+                "warning_threshold_pct": (0.70, 0.75, 0.80)[index % 3],
+                "active": code != "operational_exception",
+            },
+        )
+
+
+def _generate_budgets(
+    add: Any,
+    company: CompanyTemplate,
+    org_id: str,
+    dept_ids: dict[str, str],
+    category_ids: dict[str, str],
+    cases: list[dict[str, Any]],
+    now: datetime,
+) -> None:
+    """Per-category Q2-2026 budgets plus per-case spend transactions.
+
+    Applies the spec's budget logic deterministically: each consuming case is a
+    ``debit``; some budgets show a released reservation (``credit``); every
+    fifth budget is intentionally breached (``spent_amount > budget_amount``)
+    with an ``adjustment`` row flagging the overage for finance review.
+    """
+    period_start, period_end = "2026-04-01", "2026-06-30"
+    by_category: dict[str, list[dict[str, Any]]] = {}
+    for case in cases:
+        if case["approved_amount"] and case["status"] in {"approved", "partially_approved", "closed"}:
+            by_category.setdefault(case["category_code"], []).append(case)
+
+    for index, code in enumerate(sorted(by_category)):
+        category_cases = by_category[code]
+        budget_id = deterministic_id_str(company.slug, "budget", code)
+        # (transaction_type, amount, case_id, created_at, notes)
+        txns: list[tuple[str, float, str | None, str, str]] = [
+            (
+                "debit",
+                round(case["approved_amount"], 2),
+                case["id"],
+                case["created_at"],
+                f"Consumed budget for {case['case_number']} ({code}).",
+            )
+            for case in category_cases
+        ]
+        if index % 4 == 1:
+            head = category_cases[0]
+            txns.append(
+                (
+                    "credit",
+                    round(head["approved_amount"] * 0.25, 2),
+                    head["id"],
+                    head["created_at"],
+                    "Released over-reserved amount back to the budget envelope.",
+                )
+            )
+        spent = round(
+            sum(amount if ttype == "debit" else -amount for ttype, amount, _, _, _ in txns if ttype in {"debit", "credit"}),
+            2,
+        )
+        breached = index % 5 == 0
+        budget_amount = round(spent * 0.8, 2) if breached else round(spent * 1.6 + 50000, 2)
+        if breached:
+            txns.append(
+                (
+                    "adjustment",
+                    round(spent - budget_amount, 2),
+                    None,
+                    now.isoformat(),
+                    "Spend exceeded the allocated envelope; flagged for finance review.",
+                )
+            )
+        dept_name = DEPARTMENT_BY_EXCEPTION.get(code, "Customer Success")
+        add(
+            "exception_budgets",
+            {
+                "id": budget_id,
+                "organization_id": org_id,
+                "department_id": dept_ids.get(dept_name),
+                "category_id": category_ids[code],
+                "period_start": period_start,
+                "period_end": period_end,
+                "budget_amount": budget_amount,
+                "currency": company.currency,
+                "spent_amount": spent,
+                "created_at": now.isoformat(),
+                "updated_at": now.isoformat(),
+            },
+        )
+        for txn_index, (ttype, amount, case_id, created_at, notes) in enumerate(txns):
+            add(
+                "budget_transactions",
+                {
+                    "id": deterministic_id_str(company.slug, "budget_txn", code, str(txn_index)),
+                    "budget_id": budget_id,
+                    "case_id": case_id,
+                    "amount": amount,
+                    "transaction_type": ttype,
+                    "notes": notes,
+                    "created_at": created_at,
+                },
+                org_id=org_id,
+            )
 
 
 def _generate_departments(add: Any, company: CompanyTemplate, org_id: str) -> dict[str, str]:

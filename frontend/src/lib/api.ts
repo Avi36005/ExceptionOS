@@ -94,6 +94,7 @@ import type {
   AdminOrganizationList,
   SystemHealthStatus,
 } from './types/admin'
+import type { NotificationItem } from './types/notifications'
 import type {
   DemoStatus,
   DemoResetResponse,
@@ -559,6 +560,21 @@ export const adminApi = {
   stats: () => getData<AdminStats>('admin/stats'),
   /** Best-guess endpoint for /app/admin/system-health pending backend route. */
   systemHealth: () => getData<SystemHealthStatus>('admin/system-health'),
+}
+
+// ---------------------------------------------------------------------------
+// Resource: Notifications
+// ---------------------------------------------------------------------------
+
+export const notificationsApi = {
+  list: (orgId?: string) =>
+    getData<NotificationItem[]>('notifications', {
+      query: orgId ? { organization_id: orgId } : undefined,
+    }),
+  markRead: (notificationId: string) =>
+    request<{ message: string; data?: { id: string } }>(`notifications/${notificationId}/read`, {
+      method: 'POST',
+    }),
 }
 
 // ---------------------------------------------------------------------------
